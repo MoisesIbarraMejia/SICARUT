@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Sistema de Consulta - IECM</title>
+    <link rel="stylesheet" href="styles/stylesIndex.css" />
+    <link rel="stylesheet" href="styles/stylesDescargas.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Edu+NSW+ACT+Cursive:wght@400..700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- LINK PARA CREAR EL XLSX  -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <!-- LIBRERIA EXCELJS -->
+    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.3.0/dist/exceljs.min.js"></script>
+
+</head>
+<body>
+
+    <!--Prueba-->
+
+    <!-- PÁGINA UNIFICADA -->
+    <div class="unified-section">
+        <!-- Fondo con la ciudad -->
+        <div class="city-background"></div>
+
+        <!-- Panel de contenido principal -->
+        <div class="content-panel" id="contentPanel">
+            <div class="panel-background" id="panelBackground"></div>
+            <div class="panel-content">
+                <div class="panel-text" id="panelTextContainer">
+
+                    <!-- Estado inicial: Conoce las Características -->
+                    <div class="initial-state" id="initialState">
+
+                        <h2 class="panel-title">Conoce las Unidades Territoriales</h2>
+                        <h3 class="panel-name">De la Ciudad de México</h3>
+                        <p class="panel-description">Entra y selecciona tu unidad territorial para conocer sus características geoelectorales y de participación ciudadana.</p>
+                        <button class="panel-button" id="btnSaberMas">ENTRAR</button>
+
+
+                    </div>
+
+                    <!-- Estado con hero content (oculto inicialmente) -->
+                    <div class="hero-state hidden" id="heroState">
+                        <div class="hero-content-inner">
+                            <!-- Imagen -->
+                            <div class="hero-image">
+                                <!-- <img src="imagenes/iecm-paloma.png" alt="Visualización" /> -->
+                            </div>
+
+                            <!-- Texto -->
+                            <div class="hero-text">
+                                <h1 class="titulo-sombra">
+                                    Sistema de Características Geoelectorales<br>
+                                    y de Participación Ciudadana (Unidades Territoriales)
+                                </h1>
+                                <br>
+                                <h1 class="titulo-animado">
+                                    <span>Instituto Electoral</span>
+                                    <span>Ciudad de México</span>
+                                </h1>
+                            </div>
+                        </div>
+                        <!--EXTO SICARUT EN LA ESQUINA INFERIOR DERECHA -->
+                        <div class="sicarut-label">SICARUT</div>
+                    </div>
+                    
+
+                    <!-- Estado dinámico para círculos seleccionados (oculto inicialmente) -->
+                    <div class="dynamic-state hidden" id="dynamicState">
+                        <h2 class="panel-title" id="panelTitle"></h2>
+                        <h3 class="panel-name" id="panelName"></h3>
+                        <p class="panel-description" id="panelDescription"></p>
+                        <button class="panel-button" id="panelButton">Saber Más</button>
+                    </div>
+
+
+                    <!-- CONTADOR DE VISITAS -->
+                    <div id="divContador" class="contador">
+
+                        <div class="contador-item">
+
+                        <span id="contador" class="contador-numero" data-target="150000"></span>
+                            <!-- <p>Visitas</p> -->
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenedor de círculos (oculto inicialmente) -->
+        <!-- <div class="circles-container hidden" id="circlesContainer"> -->
+
+            <!-- Círculo 1: Unidades Territoriales -->
+            <!-- <div id="uts" class="circle-item" data-info="uts">
+                <div class="circle-button"></div>
+                <div class="ripple-effect"></div>
+            </div>
+             -->
+            <!-- Círculo 2: Rasgos Geográficos -->
+            <!-- <div id="caracteristicas" class="circle-item" data-info="caracteristicas">
+                <div class="circle-button"></div>
+                <div class="ripple-effect"></div>
+            </div> -->
+
+            <!-- Círculo 3: Nota Metodológica -->
+            <!-- <div id="metodologia" class="circle-item" data-info="metodologica">
+                <div class="circle-button"></div>
+                <div class="ripple-effect"></div>
+            </div> -->
+
+            <!-- Círculo 4: Glosario -->
+            <!-- <div id="glosario" class="circle-item" data-info="glosario">
+                <div class="circle-button"></div>
+                <div class="ripple-effect"></div>
+            </div> -->
+
+            <!-- Círculo 5: Conoce tu Unidad Territorial -->
+            <!-- <div id="mapa-boton" class="circle-item" data-info="unidad-territorial">
+                <div class="circle-button"></div>
+                <div class="ripple-effect"></div>
+            </div>
+
+        </div> -->
+
+        <div class="circles-container hidden" id="circlesContainer">
+
+            <!-- Círculo 1: Unidades Territoriales -->
+            <div id="uts" class="circle-item circle-uts" data-info="uts">
+                <div class="circle-button"></div>
+                <div class="ripple-effect"></div>
+            </div>
+
+            <!-- Círculo 2: Rasgos Geograficos -->
+            <div id="caracteristicas" class="circle-item circle-caracteristicas" data-info="caracteristicas">
+                <div class="circle-button"></div>
+                <div class="ripple-effect"></div>
+            </div>
+
+            <!-- Círculo 3: Conoce tu Unidad Territorial -->
+            <div id="mapa-boton" class="circle-item circle-mapa" data-info="unidad-territorial">
+                <div class="circle-button"></div>
+                <div class="ripple-effect"></div>
+            </div>
+
+            <!-- Círculo 4: Nota Metodologica -->
+            <div id="metodologia" class="circle-item circle-metodologia" data-info="metodologica">
+                <div class="circle-button"></div>
+                <div class="ripple-effect"></div>
+            </div>
+
+            <!-- Círculo 5: Glosario -->
+            <div id="glosario" class="circle-item circle-glosario" data-info="glosario"> 
+                <div class="circle-button"></div>
+                <div class="ripple-effect"></div>
+            </div>
+
+            <!-- CIRCULO 6: REFERENCIAS -->
+            <div id="referencias" class="circle-item circle-referencias" data-info="referencias">
+                <div class="circle-button"></div>
+                <div class="ripple-effect"></div>
+            </div>
+
+
+        </div>
+
+
+        <!-- MENU LATERAL DERECHO -->
+        <div class="social-menu">
+
+            <a href="https://www.facebook.com/InstitutoElectoralCM" target="_blank" class="facebook" data-tooltip="Síguenos en Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/ie_cm/" target="_blank" class="instagram" data-tooltip="Síguenos en Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://x.com/iecm" target="_blank" class="twitter" data-tooltip="Síguenos en X"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="#" id="descargas" class="download" data-tooltip="Descarga de Datos" onclick="descarga()"><i class="fa-solid fa-download"></i></a>
+            <!-- <a href="#" id="fuentes" class="fuentes" data-tooltip="Referencias" onclick="fuentes()"><i class="fa-solid fa-info"></i></a>              -->
+            <a href="#credits" id="btn-credits" class="credits" data-tooltip="Créditos"><i class="fa-solid fa-bookmark"></i></a>
+
+        </div>
+
+        <!-- OVERLAY PARA SPINNER Y CREDITOS -->
+        <div id="overlay" class="overlay hidden">
+
+            <div id="spinner" class="spinner-box">
+
+                <div class="blue-orbit leo"></div>
+                <div class="green-orbit leo"></div>
+                <div class="red-orbit leo"></div>
+                <div class="white-orbit w1 leo"></div>
+                <div class="white-orbit w2 leo"></div>
+                <div class="white-orbit w3 leo"></div>
+
+            </div>
+
+            <div id="credits-content" class="credits-content hidden">
+
+                <!-- <h2>Créditos</h2> -->
+
+                <div class="credit-section">
+
+                    <h3>DIRECCIÓN EJECUTIVA DE ORGANIZACIÓN ELECTORAL Y GEOESTADÍSTICA</h3>
+                    <hr>
+                    <h4>Héctor Alfredo Robles García</h4>
+                    <!-- <p>Director Ejecutivo de Organización Electoral y Geoestadística</p> -->
+
+                </div>
+
+                <div class="credit-section">
+
+                    <h3>DIRECCIÓN DE GEOGRAFÍA Y PROYECTOS ESPECIALES</h3>
+                    <hr>
+                    <h4>Susana Hernández Polo</h4>
+
+                </div>
+
+                <div class="credit-section">
+
+                    <h3>SUBDIRECCIÓN DE INFORMACIÓN GEOGRÁFICA</h3>
+                    <hr>
+                    <h4>José Carlos Rueda Pérez</h4>
+                    <!-- <h5>(Encargado de Despacho de la Subdirección de Información Geográfica)</h5> -->
+                    <h5>(Encargado de Despacho)</h5>
+
+
+                </div>
+
+                <div class="credit-section">
+
+                    <h3>JEFA DE DEPARTAMENTO DE ADMINISTRACIÓN DE PRODUCTOS CARTOGRÁFICOS</h3>
+                    <hr>
+                    <h4>Catalina Pérez Castro</h4>
+
+                </div>
+
+                <div class="credit-section">
+
+                    <h3>JEFA DE DEPARTAMENTO DE PROCESAMIENTO Y ANÁLISIS CARTOGRÁFICO</h3>
+                    <hr>
+                    <h4>Fabiola Belem Bennetts Bautista</h4>
+                    <!-- <h5>(Encargada de Despacho de la Jefatura de Departamento de Procesamiento y Análisis Cartográfico)</h5> -->
+                    <h5>(Encargada de Despacho)</h5>
+
+
+                </div>
+
+                <div class="credit-section">
+
+                    <h3>ANALISTAS</h3>
+                    <hr>
+                    <ul>
+                        <!-- <li>Fabiola Belem Bennetts Bautista</li> -->
+                        <li>Ignacio Vázquez Leal</li>
+                        <li>José Francisco Escobar López</li>
+                        <li>Mayte González Hernández</li>
+                    </ul>
+
+                </div>
+
+                <div class="credit-section">
+
+                    <h3>ASISTENTES OPERATIVOS</h3>
+                    <hr>
+                    <ul>
+                        <li>Caren Liliana López López</li>
+                        <li>Flor Araceli Ruiz Peña</li>
+                        <li>León Felipe Neri Padua Hernández</li>
+                        <li>Moisés Ibarra Mejía</li>
+                    </ul>
+
+                </div>
+
+                <button onclick="closeOverlay()">Cerrar</button>
+
+            </div>
+
+        </div>
+
+        <!-- OVERLAY PARA EL SPINNER DE NOTA METODOLOGICA -->
+        <div id="overlay1" class="overlay1 hidden">
+            <div class="spinner-box">
+                <div class="blue-orbit leo"></div>
+                <div class="green-orbit leo"></div>
+                <div class="red-orbit leo"></div>
+                <div class="white-orbit w1 leo"></div>
+                <div class="white-orbit w2 leo"></div>
+                <div class="white-orbit w3 leo"></div>
+            </div>
+        </div>
+
+        <!-- OVERLAY PARA EL SPINNER DE DESCARGAS -->
+        <div id="overlay2" class="overlay hidden">
+
+            <div id="spinner2" class="spinner-box">
+
+                <div class="blue-orbit leo"></div>
+                <div class="green-orbit leo"></div>
+                <div class="red-orbit leo"></div>
+                <div class="white-orbit w1 leo"></div>
+                <div class="white-orbit w2 leo"></div>
+                <div class="white-orbit w3 leo"></div>
+
+            </div>
+
+            <div id="descargas">
+
+                <div class="grid-container">
+
+                    <div class="card">
+                        <img src="https://picsum.photos/400/300?random=1" alt="">
+                        <div class="card-text">Distribución Territorial</div>
+                    </div>
+                    <div class="card">
+                        <img src="https://picsum.photos/400/300?random=2" alt="">
+                        <div class="card-text">Composición Poblacional</div>
+                    </div>
+                    <div class="card">
+                        <img src="https://picsum.photos/400/300?random=3" alt="">
+                        <div class="card-text">Vivienda</div>
+                    </div>
+                    <div class="card">
+                        <img src="https://picsum.photos/400/300?random=4" alt="">
+                        <div class="card-text">Discapacidad</div>
+                    </div>
+                    <div class="card">
+                        <img src="https://picsum.photos/400/300?random=5" alt="">
+                        <div class="card-text">Etnicidad</div>
+                    </div>
+                    <div class="card">
+                        <img src="https://picsum.photos/400/300?random=6" alt="">
+                        <div class="card-text">Migración</div>
+                    </div>
+                    <div class="card">
+                        <img src="https://picsum.photos/400/300?random=7" alt="">
+                        <div class="card-text">Características Económicas</div>
+                    </div>
+                    <div class="card">
+                        <img src="https://picsum.photos/400/300?random=8" alt="">
+                        <div class="card-text">Características Educativas</div>
+                    </div>
+                    <div class="card">
+                        <img src="https://picsum.photos/400/300?random=9" alt="">
+                        <div class="card-text">Hogares Censales</div>
+                    </div>
+                    <div class="card">
+                        <img src="https://picsum.photos/400/300?random=10" alt="">
+                        <div class="card-text">Afiliación a Servicios de Salud</div>
+                    </div>
+                    <div class="card">
+                        <img src="https://picsum.photos/400/300?random=11" alt="">
+                        <div class="card-text">Situación Conyugal</div>
+                    </div>
+
+                </div>
+                <button onclick="closeOverlayDescargas()">Cerrar</button>
+
+            </div>
+
+        </div>
+
+        <!-- Preview tooltip para hover -->
+        <div class="circle-preview" id="circlePreview">
+            <div class="preview-title"></div>
+            <div class="preview-name"></div>
+        </div>
+
+        <!-- OVERLAY PARA SPINNER Y FUENTES -->
+        <!-- <div id="overlay3" class="overlay hidden">
+
+            <div id="spinner" class="spinner-box">
+                <div class="blue-orbit leo"></div>
+                <div class="green-orbit leo"></div>
+                <div class="red-orbit leo"></div>
+                <div class="white-orbit w1 leo"></div>
+                <div class="white-orbit w2 leo"></div>
+                <div class="white-orbit w3 leo"></div>
+            </div> -->
+
+        <div id="fuentes-content" class="fuentes-content hidden">
+
+            <h2>Referencias</h2>
+
+            <div class="fuentes-section">
+
+                <hr>
+
+                <!-- 1 -->
+                <p class="texto-infografia-glosario">
+                    Acuerdo IECM/ACU-CG-100/2025, Acuerdo del Consejo General del Instituto Electoral de la Ciudad de México, por el que se aprueba el Marco Geográfico de Participación Ciudadana 2025, así como el Catálogo de Unidades Territoriales 2025 del Instituto Electoral de la Ciudad de México, México, IECM, 30 de octubre de 2025, en 
+                    <a href="https://www.iecm.mx/www/taip/cg/acu/2025/IECM-ACU-CG-100-2025.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 06 de Junio 2025].
+                </p>
+
+                <!-- 2 -->
+                <p class="texto-infografia-glosario">
+                    Aviso por el que se da a conocer la procedencia de la inscripción de 50 pueblos originarios en el Sistema de Registro y Documentación de Pueblos y Barrios Originarios y Comunidades Indígenas Residentes de la Ciudad de México, Gobierno de la Ciudad de México, 11 de mayo de 2023, en 
+                    <a href="https://data.consejeria.cdmx.gob.mx/portal_old/uploads/gacetas/5160802c3575e70d6d8db2866666c60a.pdf" target="_blank">consultar aquí</a>,[consulta hecha el 08 de Agosto 2025].
+                </p>
+
+                <!-- 3 -->
+                <p class="texto-infografia-glosario">
+                    Aviso por el que se da a conocer la procedencia de la inscripción de 5 pueblos originarios en el Sistema de Registro y Documentación de Pueblos y Barrios Originarios y Comunidades Indígenas Residentes de la Ciudad de México, Gobierno de la Ciudad de México, 5 de agosto de 2024, en 
+                    <a href="https://sepi.cdmx.gob.mx/storage/app/uploads/public/66b/213/1f8/66b2131f87c42919052048.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 12 de Junio 2025].
+                </p>
+
+                <!-- 4 -->
+                <p class="texto-infografia-glosario">
+                    Aviso por el que se da a conocer la procedencia de la inscripción de 1 pueblo originario en el Sistema de Registro y Documentación de Pueblos y Barrios Originarios y Comunidades Indígenas Residentes de la Ciudad de México, Gobierno de la Ciudad de México, 2 de octubre de 2024, en 
+                    <a href="https://data.consejeria.cdmx.gob.mx/portal_old/uploads/gacetas/aa9cac9ad13b209125f260cf1612f42a.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 30 de Junio 2025].
+                </p>
+
+                <!-- 5 -->
+                <p class="texto-infografia-glosario">
+                    Código de Instituciones y Procedimientos Electorales de la Ciudad de México, actualización del 23 de diciembre de 2024, Gobierno de la Ciudad de México, en 
+                    <a href="https://www.iecm.mx/www/marconormativo/docs/CIyPE_CDMX_2024-2.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 04 de Junio 2025].
+                </p>
+
+                <!-- 6 -->
+                <p class="texto-infografia-glosario">
+                    Consejo Nacional de Evaluación de la Política de Desarrollo Social. Manual para el Diseño y la Construcción de Indicadores. Instrumentos principales para el monitoreo de programas sociales de México, México, DF, 2013, en 
+                    <a href="https://www.coneval.org.mx/Informes/Coordinacion/Publicaciones%20oficiales/MANUAL_PARA_EL_DISENO_Y_CONTRUCCION_DE_INDICADORES.pdf" target="_blank">consultar aquí</a> [consulta hecha el 03 de junio de 2025].
+                </p>
+
+                <!-- 7 -->
+                <p class="texto-infografia-glosario">
+                    Constitución Política de la Ciudad de México, actualización del 27 de agosto de 2025, Gobierno de la Ciudad de México, en 
+                    <a href="https://www.iecm.mx/www/marconormativo/docs/CPCDMX-04_2025.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 02 de Junio 2025].
+                </p>
+
+                <!-- 8 -->
+                <p class="texto-infografia-glosario">
+                    Constitución Política de los Estados Unidos Mexicanos, actualización del 15 de octubre de 2005, Cámara de Diputados del H. Congreso de la Unión, en 
+                    <a href="https://www.diputados.gob.mx/LeyesBiblio/pdf/CPEUM.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 15 de Junio 2025].
+                </p>
+
+                <!-- 9 -->
+                <p class="texto-infografia-glosario">
+                    Decreto, que contiene el Programa Delegacional de Desarrollo Urbano para la Delegación Cuauhtémoc, Gobierno del distrito Federal, 29 de septiembre de 2008, en 
+                    <a href="https://data.consejeria.cdmx.gob.mx/portal_old/uploads/gacetas/DECRETOCUAUHTEMOC_P1.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 01 de Julio de 2025].
+                </p>
+
+                <!-- 10 -->
+                <p class="texto-infografia-glosario">
+                    Decreto. Autoridad de la Zona Patrimonio Mundial Natural y Cultural de la Humanidad en Xochimilco, Tláhuac y Milpa Alta, como órgano de apoyo a las actividades de la jefatura de gobierno en las delegaciones Xochimilco, Tláhuac y Milpa Alta de la Ciudad de México, Gobierno del Distrito Federal,11 de diciembre de 2012, en 
+                    <a href="https://data.consejeria.cdmx.gob.mx/portal_old/uploads/gacetas/50c6c6f130ff1.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 08 de Junio 2025].
+                </p>
+
+                <!-- 11 -->
+                <p class="texto-infografia-glosario">
+                    Espinosa-Zúñiga, J.J., "Aplicación de algoritmos Random Forest y XGBoost en una base de solicitudes de tarjetas de crédito, Ingeniería, investigación y tecnología, vol. XXVI, núm 4, México, octubre-diciembre 2025 en 
+                    <a href="https://doi.org/10.22201/fi.25940732e.2020.21.3.022" target="_blank">consultar aquí</a>, [consulta hecha el 6 de junio de 2025].
+                </p>
+
+                <!-- 12 -->
+                <p class="texto-infografia-glosario">
+                    ESRI. Diccionario SIG, en 
+                    <a href="https://support.esri.com/es-es/gis-dictionary/search?q=mapa+de+calor" target="_blank">consultar aquí</a>, [consulta hecha el 10 de julio de 2025].
+                </p>
+
+                <!-- 13 -->
+                <p class="texto-infografia-glosario">
+                    Gobierno de México, Secretaria de Hacienda y Crédito Público, Glosario de métodos de cálculo para indicadores, México, en 
+                    <a href="https://www.transparenciapresupuestaria.gob.mx/work/models/PTP/Capacitacion/glosario_formulas_2015.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 4 de junio de 2025].
+                </p>
+
+                <!-- 14 -->
+                <p class="texto-infografia-glosario">
+                    Instituto Electoral de la Ciudad de México, Sistema de Consulta del Marco Geográfico de Participación Ciudadana 2025, México, IECM, en 
+                    <a href="https://scmgpc.iecm.mx/" target="_blank">consultar aquí</a>, [consulta hecha el 14 de Junio de 2025].
+                </p>
+
+                <!-- 15 -->
+                <p class="texto-infografia-glosario">
+                    Instituto Nacional de Estadística y geografía, Metodología de Indicadores de la Serie Histórica Censal, INEGI 2017, en 
+                    <a href="https://www.inegi.org.mx/contenidos/programas/ccpv/cpvsh/doc/serie_historica_censal_met_indicadores.pdf" target="_blank">consultar aquí</a> [consulta hecha el 9 de junio de 2025].
+                </p>
+
+                <!-- 16 -->
+                <p class="texto-infografia-glosario">
+                    Instituto Nacional de Estadística y Geografía, Cuéntame de México, La población afromexicana o afrodescendiente en México, México, INEGI, en 
+                    <a href="https://cuentame.inegi.org.mx/explora/poblacion/afrodescendientes/" target="_blank">consultar aquí</a> [consulta hecha el 4 de junio de 2025].
+                </p>
+
+                <!-- 17 -->
+                <p class="texto-infografia-glosario">
+                    Instituto Nacional de Estadística y Geografía, Marco Geoestadístico, INEGI, México, en 
+                    <a href="https://www.inegi.org.mx/temas/mg/" target="_blank">consultar aquí</a> [consulta hecha el 6 de junio de 2025].
+                </p>
+
+                <!-- 18 -->
+                <p class="texto-infografia-glosario">
+                    Instituto Nacional de Estadística y Geografía, Principales resultados por AGEB y manzana urbana. Ciudad de México (datos 2020), México, INEGI, en 
+                    <a href="https://www.inegi.org.mx/app/descarga/ficha.html?tit=326080&ag=0&f=csv" target="_blank">consultar aquí</a> [consulta hecha el 6 de junio de 2025].
+                </p>
+
+                <!-- 19 -->
+                <p class="texto-infografia-glosario">
+                    Instituto Nacional de Estadística y Geografía, Principales resultados por localidad (ITER). Ciudad de México (datos 2020), México, INEGI, en 
+                    <a href="https://www.inegi.org.mx/app/descarga/ficha.html?tit=325907&ag=0&f=csv" target="_blank">consultar aquí</a> [consulta hecha el 6 de junio de 2025].
+                </p>
+
+                <!-- 20 -->
+                <p class="texto-infografia-glosario">
+                    Instituto Nacional de Geografía y Estadística, Glosario, México, en 
+                    <a href="https://www.inegi.org.mx/app/glosario/default.html?p=Topo50#letraGloCse" target="_blank">consultar aquí</a> [consulta hecha el 11 de agosto de 2025].
+                </p>
+
+                <!-- 21 -->
+                <p class="texto-infografia-glosario">
+                    Instituto Nacional de Geografía y Estadística. Guía metodológica, México, en 
+                    <a href="https://www.inegi.org.mx/programas/ccpv/2020/tableros/panorama/guia/" target="_blank">consultar aquí</a> [consulta hecha el 11 de junio de 2025].
+                </p>
+
+                <!-- 22 -->
+                <p class="texto-infografia-glosario">
+                    Ley de Participación Ciudadana de la Ciudad de México, actualización del 17 de diciembre de 2024, en 
+                    <a href="https://www.iecm.mx/www/marconormativo/docs/8.Ley-PC-CDMX.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 10 de Junio de 2025].
+                </p>
+
+                <!-- 23 -->
+                <p class="texto-infografia-glosario">
+                    Ley General del equilibrio ecológico y la protección al ambiente, actualización del 1 de abril de 2024, en 
+                    <a href="http://www.diputados.gob.mx/LeyesBiblio/pdf/148_010424.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 14 de Junio de 2025].
+                </p>
+
+                <!-- 24 -->
+                <p class="texto-infografia-glosario">
+                    Schuschny Andrés y Soto Humberto, Guía metodológica. Diseño de indicadores compuestos de desarrollo sostenible, Comisión Económica para América Latina y el Caribe, Santiago de Chile, 2009, en 
+                    <a href="https://repositorio.cepal.org/server/api/core/bitstreams/a627f68b-9902-4fa2-a516-912a903ecf22/content" target="_blank">consultar aquí</a> [consulta hecha el 3 de junio de 2025].
+                </p>
+
+                <!-- 25 -->
+                <p class="texto-infografia-glosario">
+                    Secretaría del Medio Ambiente (SEDEMA), Desarrollo urbano, vivienda y territorio, Medio Ambiente y Cambio Climático, Ciudad de México, 2018, en 
+                    <a href="https://datos.cdmx.gob.mx/dataset/suelo-de-conservacion" target="_blank">consultar aquí</a> [consulta hecha el 11 de junio de 2025].
+                </p>
+
+                <!-- 26 -->
+                <p class="texto-infografia-glosario">
+                    Sistema Nacional de Información Estadística y Geografía, Glosario del SNIEG 2023, México, en 
+                    <a href="https://www.snieg.mx/Documentos/Normatividad/Historica/Glosario_Normatividad_SNIEG_2023.PDF" target="_blank">consultar aquí</a> [consulta hecha el 21 de julio de 2025].
+                </p>
+
+                <!-- 27 -->
+                <p class="texto-infografia-glosario">
+                    Universidad Abierta y a Distancia de México, "Demografía. Unidad 1, El conocimiento de la demografía", México, en 
+                    <a href="https://dmd.unadmexico.mx/contenidos/DCSBA/BLOQUE1/GSS/03/HDEM/unidad_01/descargables/HDEM_U1_Contenido.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 6 de junio de 2025].
+                </p>
+
+            </div>
+
+        </div>
+
+        
+
+
+
+    </div>
+
+    <!-- PRESENTACION -->
+    <div id="impress-modal-uts" class="modal hidden impress-modal">
+
+        <div id="impress-uts">
+
+            <div id="step-uts-1" class="step" style="position: relative;">
+
+                <div class="infografia-menu-lateral">
+
+                    <h2>Presentación</h2>
+
+                    <center><p><strong>Conocer nuestro entorno territorial es el primer paso para transformarlo</strong></p></center><br><br>
+
+                    <p style="text-align: justify;">
+
+                        El Sistema Características Geoelectorales y de Participación Ciudadana (Unidades Territoriales) es una herramienta diseñada para presentar y difundir información geoelectoral y de participación ciudadana correspondiente a las Unidades Territoriales que integran el Marco Geográfico de Participación Ciudadana de la Ciudad de México.
+                        <br><br>
+                       El Sistema integra indicadores sociodemográficos básicos derivados del Censo INEGI 2020, organizados en temas de interés para comprender nuestro entorno, como,  características de población, distribución territorial, vivienda, etnicidad, discapacidad, migración, economía, educación, hogares censales, servicios de salud y situación conyugal.
+                        <br><br>
+                        Conocer estos datos no es un ejercicio técnico, sino el primer paso para transitar de la intuición a la propuesta fundamentada, de la queja espontánea al argumento sólido, de la demanda aislada a la agenda territorial compartida. Este sistema convierte el espacio geográfico en conocimiento accesible para la ciudadanía, permitiendo que cada persona, organización o colectivo pueda comprender su entorno y, desde esa óptica, construir propuestas de transformación que visibilicen las múltiples realidades del territorio y fortalezcan la democracia participativa.
+                        <br><br></p>
+
+
+                         <p style="text-align: justify;">La organización del sistema comprende los siguientes apartados:</p><br><br>
+
+
+                            <ul>
+                                <li style="text-align: justify;">
+
+
+
+
+                                   <strong>Marco Geográfico de Participación Ciudadana (MGPC)</strong> - En este apartado se presenta la composición actual del Marco Geográfico de Participación Ciudadana para los procesos de Participación Ciudadana.
+
+
+
+                                </li><br><br>
+
+                                <li style="text-align: justify;">
+
+                                    <strong>Características Geoelectorales y de Participación Ciudadana</strong> - En este apartado se encuentran las funcionalidades del sistema junto con la información geoelectoral y de participación ciudadana de las unidades territoriales, indicadores sociodemográficos, información complementaria y las opciones para descargar los datos contenidos en el sistema.
+
+
+                                </li><br><br>
+
+
+                                <li style="text-align: justify;">
+
+                                    <strong>Metodología</strong> - Aquí se describen brevemente las acciones y procedimientos empleados en la construcción del Sistema de Características Geoelectorales y de Participación Ciudadana (Unidades Territoriales), abarcando dos aspectos fundamentales: la recopilación de información y su procesamiento.
+
+
+                                </li><br><br>
+
+
+                                <li style="text-align: justify;">
+
+                                    <strong>Glosario</strong> - Este apartado contiene conceptos  y/o definiciones que facilitan la comprensión de la información incluida en el Sistema de Características Geoelectorales y de Participación Ciudadana (Unidades Territoriales).
+
+
+                                </li><br><br>
+
+
+                                <!-- <li style="text-align: justify;">
+
+                                    <strong>Glosario de Términos</strong>, en este apartado la persona usuaria podrá consultar algunos de los términos más relevantes para la mejor comprensión de las distintas secciones del sistema.
+
+                                </li><br><br> -->                                
+
+                            </ul>
+
+                            <p style="text-align: justify;">De esta manera, el IECM ratifica su compromiso con la transparencia y disponibilidad de datos, la exploración tecnológica y el fortalecimiento de la participación ciudadana, ofreciendo a la ciudadanía una herramienta poderosa, accesible y moderna para el análisis y comprensión de nuestro territorio.</p>
+
+                </div>
+
+            </div>
+
+        </div>
+        <button class="close-modal">&times;</button>
+
+    </div>
+
+    <!-- MARCO GEOGRAFICO DE PARTICIPACION CIUDADANA  -->
+    <div id="impress-modal-carac" class="modal hidden impress-modal">
+
+        <div id="impress-carac">
+
+            <div id="step-carac" class="step" style="position: relative;">
+
+                <!-- LA DEMOCRACIA PARTICIPATIVA -->
+                <div class="infografia-menu-lateral-mgpc">
+
+                    <h2>
+                        MARCO GEOGRÁFICO DE PARTICIPACIóN CIUDADANA
+                    </h2>
+
+
+                        <!-- <p style="text-align: justify;">
+
+                            El Instituto Electoral de la Ciudad de México (IECM), como parte de sus atribuciones en materia de Participación Ciudadana, mantiene un trabajo constante en la revisión de los mecanismos e instrumentos que posibilitan la construcción de una ciudadanía más democrática y participativa.
+                        </p><br> -->
+
+                        <p style="text-align: justify;">
+
+                            La actualización del Marco Geográfico de Participación Ciudadana (MGPC) es una atribución de la Dirección Ejecutiva de Organización Electoral y Geoestadística (DEOEyG) con fundamento en el artículo 96, fracción XI del Código de Instituciones y Procedimientos Electorales de la Ciudad de México (Código); así como en cumplimiento al artículo 83 y 116 de la Ley de Participación Ciudadana de la Ciudad de México (Ley de Participación).
+
+                        </p><br>
+
+                        <p style="text-align: justify;">
+
+                            El MGPC 2025 se constituye como un instrumento técnico-cartográfico donde se materializa territorialmente el derecho constitucional a la participación ciudadana, definiendo espacios geográficos denominados Unidades Territoriales donde la ciudadanía puede ejercer la democracia directa y participativa de manera sistemática y efectiva.
+
+                        </p><br>
+
+                        <p style="text-align: justify;">
+
+                            La conformación del MGPC se integra a partir de la base cartográfica digital vigente que proporciona el Instituto Nacional Electoral (INE); la notificación de registro de pueblos y barrios originarios que realiza la Secretaría de Pueblos y Barrios Originarios y Comunidades Indígenas Residentes de la Ciudad de México (SEPI); y aquellos ajustes en materia de nomenclatura de colonias que realiza la Secretaría de Planeación, Ordenamiento Territorial y Coordinación Metropolitana (antes SEDUVI).
+
+                        </p><br>
+
+                        <p style="text-align: justify;">
+
+                            La delimitación geoelectoral del MGPC 2025 se conforma de 1,851 Unidades Territoriales, aprobadas por el Consejo General del Instituto Electoral de la Ciudad de México para efectos de Participación Ciudadana.
+
+                        </p><br>
+
+                        <p style="text-align: justify;"><i><strong>
+
+                            Estas Unidades Territoriales constituyen el ámbito territorial exclusivo para la elección de Comisiones de Participación Comunitaria, así como para las consultas sobre Presupuesto Participativo.
+                        </p></i></strong>
+
+
+                </div>
+
+            </div>
+
+        </div>
+        <button class="close-modal">&times;</button>
+
+    </div>
+
+    <!-- Nota Metodologica -->
+    <div id="impress-modal-meto" class="modal hidden impress-modal">
+
+        <!-- <div id="impress-meto">
+
+            <div id="step-meto" class="step" data-x="0" data-y="0" data-scale="1" data-rotate-z="0">
+                <h2>¿Qué son las Meto?</h2>
+            </div>
+
+            <div id="step-meto-1" class="step" data-x="2000" data-y="300" data-scale="0.9" data-rotate-y="65">
+                <p>Son divisiones geográficas que delimitan el territorio de la Ciudad de México para la participación ciudadana.</p>
+            </div>
+
+            <div id="step-meto-2" class="step" data-x="4500" data-y="-600" data-z="400" data-scale="1.3" data-rotate-x="45">
+                <h2>¿Cómo se utilizan las Meto?</h2>
+            </div>
+
+            <div id="step-meto-3" class="step" data-x="7500" data-y="400">
+                <p>El IECM cuenta con un Sistema de Consulta del Marco Geográfico de Participación Ciudadana donde se pueden consultar estas unidades.</p>
+            </div>
+
+            <div id="step-meto-4" class="step" data-x="10500" data-y="1000" data-z="-1300" data-rotate="360" data-scale="2">
+                <h2>¿Qué es la Participación Ciudadana?</h2>
+            </div>
+
+            <div id="step-meto-5" class="step" data-x="14000" data-y="400" data-z="-1700" data-rotate-x="180" data-rotate-z="90" data-scale="2.7">
+                <p>Se refiere al conjunto de mecanismos y acciones a través de los cuales la ciudadanía puede intervenir activamente en la toma de decisiones públicas y en la vida política de la ciudad.</p>
+            </div>
+
+            <div id="step-meto-6" class="step" data-x="6500" data-y="1000" data-z="300" data-rotate-x="90" data-rotate-y="90" data-scale="1.2">
+                <h2>Ejemplo de Participación Ciudadana</h2>
+            </div>
+
+            <div id="step-meto-7" class="step" data-x="8000" data-y="-1000" data-z="600" data-rotate-z="270" data-scale="0.8">
+                <p>Los habitantes de una unidad territorial pueden proponer mejoras en su comunidad y votar por los proyectos a implementar.</p>
+            </div>
+
+            <div id="step-meto-10" class="step" data-x="12500" data-y="-800" data-z="200" data-rotate-x="-90" data-rotate-z="-180" data-scale="0.6">
+                <h2>Impacto Comunitario</h2>
+                <p>Las decisiones tomadas por la ciudadanía pueden transformar su entorno inmediato de manera significativa.</p>
+            </div>
+
+            <div id="step-meto-11" class="step" data-x="14000" data-y="0" data-z="0" data-rotate-x="360" data-rotate-y="360" data-rotate-z="360" data-scale="3">
+                <h2>¡Participa!</h2>
+                <p>Tu voz cuenta. Involúcrate en tu comunidad y ejerce tus derechos ciudadanos.</p>
+            </div>
+        </div> -->
+
+        <button class="close-modal">&times;</button>
+
+    </div>
+
+    <!-- Glosario -->
+    <div id="impress-modal-glosa" class="modal hidden impress-modal">
+
+        <div id="impress-glos">
+
+            <div id="step-glos" class="step-glos" style="position: relative;">
+                <!-- Índice alfabético lateral -->
+                <div class="indice-alfabetico">
+                    <a href="#letra-a" class="indice-letra">A</a>
+                    <a href="#letra-c" class="indice-letra">C</a>
+                    <a href="#letra-d" class="indice-letra">D</a>
+                    <a href="#letra-e" class="indice-letra">E</a>
+                    <a href="#letra-f" class="indice-letra">F</a>
+                    <a href="#letra-i" class="indice-letra">I</a>
+                    <a href="#letra-l" class="indice-letra">L</a>
+                    <a href="#letra-m" class="indice-letra">M</a>
+                    <a href="#letra-p" class="indice-letra">P</a>
+                    <a href="#letra-r" class="indice-letra">R</a>
+                    <a href="#letra-s" class="indice-letra">S</a>
+                    <a href="#letra-u" class="indice-letra">U</a>
+                    <a href="#letra-z" class="indice-letra">Z</a>
+                </div>
+
+              <!-- BLOQUE 1 -->
+              <div class="infografia-menu-lateral">
+
+                <h2>Glosario</h2>
+
+                <h3 class="letra-seccion" id="letra-a">A</h3><br>
+                <h3>Afromexicano(a) o afrodescendiente:</h3>
+                <p class="texto-infografia-glosario">
+                  Son aquellas personas con raíces o antepasados provenientes del continente africano y que llegaron a México durante la colonia, para trabajar en condiciones de esclavitud en haciendas, minas, talleres y en servicios del hogar.
+                </p>
+                <h3>Alcaldía:</h3>
+                <p class="texto-infografia-glosario">
+                  De acuerdo con el artículo 2, fracción II, de la Ley de Participación Ciudadana de la Ciudad de México, se refiere al órgano político administrativo que se integra por un alcalde o alcaldesa y un concejo de personas electas por votación universal, libre, secreta y directa para un periodo de tres años.
+                </p>
+                <h3>Análisis espacial:</h3>
+                <p class="texto-infografia-glosario">
+                  Proceso de manipular información espacial para extraer información nueva y significativa a partir de los datos originales. Generalmente para realizar un análisis espacial se utilizan Sistemas de Información Geográfica (SIG).
+                </p>
+                <h3>Área de Conservación patrimonial:</h3>
+                <p class="texto-infografia-glosario">
+                  Son los perímetros en donde aplican normas y restricciones específicas con el objeto de salvaguardar su fisonomía, para conservar, mantener y mejorar el patrimonio arquitectónico y ambiental, la imagen urbana y las características de la traza y del funcionamiento de barrios, calles históricas o típicas, sitios arqueológicos o históricos y sus entornos tutelares, los monumentos nacionales y todos aquellos elementos que sin estar formalmente catalogados merecen tutela en su conservación y consolidación.
+                </p>
+                <h3>Área Natural Protegida:</h3>
+                <p class="texto-infografia-glosario">
+                  De acuerdo con el artículo 44 de la Ley General del equilibrio ecológico y la protección al ambiente, se refiere a las zonas del territorio nacional y aquellas sobre las que la nación ejerce su soberanía y jurisdicción, en donde los ambientes originales no han sido significativamente alterados por la actividad del ser humano o que requieren ser preservadas y restauradas y están sujetas al régimen previsto en la ley.
+                </p>
+                <h3>Autoridad de la Zona Patrimonio:</h3>
+                <p class="texto-infografia-glosario">
+                  Es un órgano desconcentrado de la Jefatura de Gobierno de la Ciudad de México con el objetivo de consolidar, ampliar y eficientar las políticas, programas y acciones del gobierno de la Ciudad en materia de investigación, difusión, protección ecológica, conservación, mantenimiento, restauración y desarrollo sustentable, así como la realización y promoción de actividades sociales, culturales, artísticas y académicas tendientes a la preservación de dicha zona.
+                </p>
+
+
+                <h3 class="letra-seccion" id="letra-c">C</h3><br>
+                <h3>Cartografía electoral local:</h3>
+                <p class="texto-infografia-glosario">
+                  Es la representación gráfica que elabora el Instituto Electoral de la Ciudad de México para el ejercicio de sus atribuciones electorales locales, de acuerdo con la base cartográfica digital vigente proporcionada por el INE.
+                </p>
+                <h3>Ciudadana (o):</h3>
+                <p class="texto-infografia-glosario">
+                  Conforme al artículo 34 de la Constitución Federal, son ciudadanos de la República los varones y mujeres que, teniendo la calidad de mexicanos, reúnan, además, los siguientes requisitos:
+                  <div class="texto-infografia-lista">
+                    <ul>
+                      <li>Haber cumplido 18 años</li>
+                      <li>Tener un modo honesto de vivir</li>
+                    </ul>
+                    <p>
+                      <!-- <sup>1</sup><b> Artículo 34</b> de la Constitución Política de los Estados Unidos Mexicanos. -->
+                    </p>
+                  </div>
+                </p>
+                <h3>Coeficiente Kappa (κ):</h3>
+                <p class="texto-infografia-glosario">
+                  Medida estadística que evalúa el grado de acuerdo o concordancia entre dos observadores, evaluadores o instrumentos que clasifican los mismos elementos en categorías mutuamente excluyentes, considerando el acuerdo que podría ocurrir por azar. Su valor oscila entre -1 y 1, donde 1 indica un acuerdo perfecto, 0 un acuerdo equivalente al azar y valores negativos un desacuerdo menor al esperado por azar. Se utiliza comúnmente para medir la fiabilidad interevaluador o la consistencia entre diferentes métodos de clasificación.
+                </p>
+                <h3>Curvas de nivel:</h3>
+                <p class="texto-infografia-glosario">
+                  Línea imaginaria que une puntos con la misma altura con respecto al Sistema Geodésico Vertical, empleada para representar el relieve del terreno.
+                </p>
+
+
+                <H3 class="letra-seccion" id="letra-d">D</H3><br>
+                <h3>Demarcación territorial:</h3>
+                <p class="texto-infografia-glosario">
+                  De acuerdo con el artículo 2, fracción IX de la Ley de Participación Ciudadana de la Ciudad de México, es base de la división y de la organización político-administrativa de la Ciudad de México.
+                </p>
+                <h3>Demografía estática:</h3>
+                <p class="texto-infografia-glosario">
+                  La demografía estática estudia cómo es la población en un momento concreto del tiempo.
+                  <!-- <div class="texto-infografia-lista">
+                    <ul>
+                      <li>Cuántos individuos componen la población: ¿Cuántos son?, es decir, cuántas personas residen en un territorio geográficamente bien delimitado.</li>
+                      <li>Cualidades de esa población: ¿Quiénes son?, las características de persona con interés demográfico son; sexo, edad, estado civil, lugar de nacimiento, lengua hablada, nacionalidad, nivel de instrucción y características económicas.</li>
+                      <li>Zona geográfica en que asientan: ¿Dónde viven?, nos proporciona información de cómo es el territorio en el que viven.</li>
+                    </ul>
+                  </div> -->
+                </p>
+                <h3>Distrito electoral local uninominal:</h3>
+                <p class="texto-infografia-glosario">
+                  Ámbito espacial determinado por la autoridad electoral competente. Todos los electores para sufragar se ubican conforme a su domicilio en distritos electorales. Cada uno de ellos se divide en secciones, las cuales corresponden a las casillas en donde determinado número de electores depositarán sus votos durante la elección.
+                </p>
+
+
+                <H3 class="letra-seccion" id="letra-e">E</H3><br>
+                <h3>Espacio geográfico:</h3>
+                <p class="texto-infografia-glosario">
+                  Es el espacio accesible al hombre, usado por los humanos para su existencia; se presenta como el soporte de unos sistemas de relaciones, determinándose unas a partir de los elementos del medio físico (arquitectura de los volúmenes rocosos, clima, vegetación), y las otras procedentes de las sociedades humanas que ordenan el espacio en función de la densidad del poblamiento, de la organización social y económica, del nivel de las técnicas, en una palabra, de todo el tupido tejido histórico que constituye una civilización.
+                </p>
+
+
+                <H3 class="letra-seccion" id="letra-f">F</H3><br>
+                <h3>Filtrado geométrico:</h3>
+                <p class="texto-infografia-glosario">
+                  Técnica utilizada en el procesamiento de imágenes o señales que aplica operaciones matemáticas basadas en la forma, estructura o geometría de los objetos presentes en la imagen. Su objetivo es resaltar, suavizar, eliminar o modificar detalles específicos según sus características geométricas, como bordes, contornos o áreas. Se emplea comúnmente para mejorar la calidad visual, reducir el ruido o facilitar el análisis de formas en imágenes digitales.
+                </p>
+
+
+                <H3 class="letra-seccion" id="letra-i">I</H3><br>
+                <h3>Imagen satelital:</h3>
+                <p class="texto-infografia-glosario">
+                  Cobertura de malla cuyos valores de atributo son una representación numérica de un parámetro físico.
+                </p>
+                <h3>Índice compuesto:</h3>
+                <p class="texto-infografia-glosario">
+                  Representación simplificada que busca resumir un concepto multidimensional en un índice simple.
+                  En términos técnicos, un índice se define como una función de una o más variables, que conjuntamente “miden”
+                  una característica o atributo de los individuos en estudio.
+                </p>
+
+
+                <H3 class="letra-seccion" id="letra-l">L</H3><br>
+                <h3>Lista nominal:</h3>
+                <p class="texto-infografia-glosario">
+                  Relación de ciudadanos que contiene el nombre, dirección, distrito y sección de quienes cuentan con su Credencial para Votar vigente y están incluidos en el Padrón Electoral. También cuenta con una fotografía impresa idéntica a la de la Credencial para Votar más reciente.
+                </p>
+
+
+                <H3 class="letra-seccion" id="letra-m">M</H3><br>
+                <h3>Mapa de calor:</h3>
+                <p class="texto-infografia-glosario">
+                  Estilo de simbología que muestra la distribución relativa de la densidad de puntos utilizando una rampa de color continua que implica la temperatura que va de frío (puntos oscuros) a caliente (muchos puntos).
+                </p>
+                <h3>Marco Geográfico de Participación Ciudadana (MGPC):</h3>
+                <p class="texto-infografia-glosario">
+                  Es la delimitación geoelectoral en unidades territoriales, aprobadas por el Consejo General del IECM, para efectos de Participación Ciudadana. Ámbito territorial exclusivo para la Elección de Comisiones de Participación Comunitaria (COPACO), así como para las consultas sobre presupuesto participativo.
+                </p>
+                <h3>Marco Geográfico Electoral Local (MGEL):</h3>
+                <p class="texto-infografia-glosario">
+                  Ámbito territorial integrado por el territorio de la Ciudad de México, con la división de las 16 demarcaciones territoriales, para la elección de alcalde o alcaldesa; la delimitación de los 33 distritos electorales uninominales locales, para elegir a 33 diputados o diputadas uninominales; 121 circunscripciones, para la designación de 121 concejales o concejalas de mayoría relativa; y 5 mil 589 secciones electorales.
+                </p>
+
+
+                <H3 class="letra-seccion" id="letra-p">P</H3><br>
+                <h3>Participación ciudadana:</h3>
+                <p class="texto-infografia-glosario">
+                  De acuerdo con el artículo 3 de la Ley de Participación ciudadana de la Ciudad de México, se refiere al conjunto de actividades mediante las cuales toda persona tiene el derecho individual o colectivo para intervenir en las decisiones públicas, deliberar, discutir y cooperar con las autoridades, así como para incidir en la formulación, ejecución y evaluación de las políticas y actos de gobierno de manera efectiva, amplia, equitativa, democrática y accesible; y en el proceso de planeación, elaboración, aprobación, gestión, evaluación y control de planes, programas, políticas y presupuestos públicos.
+                </p>
+                <h3>Perfil altimétrico:</h3>
+                <p class="texto-infografia-glosario">
+                  Diagrama que muestra el cambio de elevación de una superficie a lo largo de una ruta terrestre y tiene como base las curvas de nivel.
+                </p>
+                <h3>Persona no binaria:</h3>
+                <p class="texto-infografia-glosario">
+                  Personas que no se identifican como varones ni como mujeres, sino con una identidad de género no binaria, se encuentra fuera del patrón binario hombre-mujer, ya que comprende que la identidad no es únicamente femenina o masculino.
+                </p>
+                <h3>Población:</h3>
+                <p class="texto-infografia-glosario">
+                  Personas con características diversas, que comparten entre otras cosas el territorio, la historia, el idioma y algunas costumbres.
+                </p>
+                <h3>Pueblo y / o barrio originario:</h3>
+                <p class="texto-infografia-glosario">
+                  Los pueblos y barrios originarios son aquellos que descienden de poblaciones asentadas en el territorio actual de la Ciudad de México desde antes de la colonización y del establecimiento de las fronteras actuales y que conservan sus propias instituciones sociales, económicas, culturales y políticas, sistemas normativos propios, tradición histórica, territorialidad y cosmovisión, o parte de ellas.
+                </p>
+
+
+                <H3 class="letra-seccion" id="letra-r">R</H3><br>
+                <h3>Random Forest:</h3>
+                <p class="texto-infografia-glosario">
+                  Es una técnica de aprendizaje supervisado que genera múltiples árboles de decisión sobre un conjunto de datos de entrenamiento: los resultados obtenidos se combinan a fin de obtener un modelo único más robusto en comparación con los resultados de cada árbol por separado. La medida de evaluación que se utilizó fue Out-of-Bag Score (OOB Score), permitiendo estimar el rendimiento del modelo sin necesidad de un conjunto de validación independiente. El OOB Score indica qué tan bien generaliza el modelo a datos no vistos, funcionando como una estimación interna de su precisión o error.
+                </p>
+                <h3>Reescalamiento:</h3>
+                <p class="texto-infografia-glosario">
+                  Técnica estadística que consiste en transformar los niveles de las variables para llevarlos al intervalo [0,1], empleando la distancia entre los valores máximos y mínimos que la variable adquiere considerando todos los datos de la variable conjuntamente.
+                </p>
+
+
+                <H3 class="letra-seccion" id="letra-s">S</H3><br>
+                <h3>Sección electoral:</h3>
+                <p class="texto-infografia-glosario">
+                  Fracción territorial de los distritos electorales uninominales para la inscripción de los ciudadanos en el Padrón Electoral y en las listas nominales de electores. Cada sección tendrá como mínimo 100 electores y como máximo 3,000.
+                </p>
+                <h3>Sistema de Información Geográfica:</h3>
+                <p class="texto-infografia-glosario">
+                  Es un entorno para recopilar, gestionar y analizar datos. Arraigado en la ciencia de la geografía, el SIG integra muchos tipos de datos. Analiza la ubicación espacial y organiza capas de información en visualizaciones usando mapas y escenas 3D. Con esta capacidad única, los SIG revelan conocimientos más profundos de los datos, como patrones, relaciones y situaciones, ayudando a los usuarios a tomar decisiones más inteligentes.
+                </p>
+
+
+                <H3 class="letra-seccion" id="letra-u">U</H3><br>
+                <h3>Unidades Territoriales:</h3>
+                <p class="texto-infografia-glosario">
+                  De acuerdo con el artículo 2, fracción XXVI de la Ley de Participación Ciudadana, es el ámbito territorial clasificado en colonias, unidades habitacionales, pueblos y barrios originarios que establezca el IECM, para efectos de participación ciudadana.
+                </p>
+
+                <H3 class="letra-seccion" id="letra-z">Z</H3><br>
+                <h3>Zona de valor ambiental:</h3>
+                <p class="texto-infografia-glosario">
+                  Son espacios verdes de la Ciudad de México que han sido modificados por la actividad humana, pero que aún conservan características que permiten preservarlas o restaurarlas, ya que son importantes para la sustentabilidad y el funcionamiento de la ciudad.
+                </p>
+
+              </div>
+
+              <!-- BLOQUE 2 -->
+              <!-- <div class="infografia-menu-lateral">
+
+                <h3>Ciudadana (o):</h3>
+                <p class="texto-infografia-glosario">
+                  Son ciudadanos de la República los varones y mujeres que, teniendo la calidad de mexicanos, reúnan, además, los siguientes requisitos:
+                  <div class="texto-infografia-lista">
+                    <ul>
+                      <li>Haber cumplido 18 años</li>
+                      <li>Tener un modo honesto de vivir</li>
+                    </ul>
+                    <p>
+                      <sup>1</sup><b> Artículo 34</b> de la Constitución Política de los Estados Unidos Mexicanos.
+                    </p>
+                  </div>
+                </p>
+
+                <h3>Demarcación territorial:</h3>
+                <p class="texto-infografia-glosario">
+                  Base de la división y de la organización político-administrativa de la Ciudad de México.
+                </p>
+
+                <h3>Demografía estática:</h3>
+                <p class="texto-infografia-glosario">
+                  La demografía estática estudia cómo es la población en un momento concreto del tiempo. Estudia varios aspectos de la población:
+                  <div class="texto-infografia-lista">
+                    <ul>
+                      <li>Cuántos individuos componen la población: ¿Cuántos son?, es decir, cuántas personas residen en un territorio geográficamente bien delimitado.</li>
+                      <li>Cualidades de esa población: ¿Quiénes son?, las características de persona con interés demográfico son; sexo, edad, estado civil, lugar de nacimiento, lengua hablada, nacionalidad, nivel de instrucción y características económicas.</li>
+                      <li>Zona geográfica en que asientan: ¿Dónde viven?, nos proporciona información de cómo es el territorio en el que viven.</li>
+                    </ul>
+                  </div>
+                </p>
+
+                <h3>Distrito electoral local uninominal:</h3>
+                <p class="texto-infografia-glosario">
+                  Ámbito espacial determinado por la autoridad electoral competente. Todos los electores para sufragar se ubican conforme a su domicilio en distritos electorales.
+                  Cada uno de ellos se divide en secciones, las cuales corresponden a las casillas donde determinado número de electores depositarán sus votos durante la elección.
+                </p>
+
+              </div> -->
+
+              <!-- BLOQUE 3 -->
+              <!-- <div class="infografia-menu-lateral">
+
+                <h3>Espacio geográfico:</h3>
+                <p class="texto-infografia-glosario">
+                  Es el espacio accesible al hombre, usado por los humanos para su existencia; se presenta como el soporte de unos sistemas de relaciones,
+                  determinándose unas a partir de los elementos del medio físico (arquitectura de los volúmenes rocosos, clima, vegetación), y las otras
+                  procedentes de las sociedades humanas que ordenan el espacio en función de la densidad del poblamiento, de la organización social y económica,
+                  del nivel de las técnicas, en una palabra, de todo el tupido tejido histórico que constituye una civilización.
+                </p>
+
+                <h3>Índice compuesto:</h3>
+                <p class="texto-infografia-glosario">
+                  Representación simplificada que busca resumir un concepto multidimensional en un índice simple.
+                  En términos técnicos, un índice se define como una función de una o más variables, que conjuntamente “miden”
+                  una característica o atributo de los individuos en estudio.
+                </p>
+
+                <h3>Lista nominal:</h3>
+                <p class="texto-infografia-glosario">
+                  Relación de ciudadanos que contiene el nombre, dirección, distrito y sección de quienes cuentan con su Credencial para Votar vigente
+                  y están incluidos en el Padrón Electoral. También cuenta con una fotografía impresa idéntica a la de la Credencial para Votar más reciente.
+                </p>
+
+                <h3>Marco Geográfico de Participación Ciudadana (MGPC):</h3>
+                <p class="texto-infografia-glosario">
+                  Es la delimitación geoelectoral en unidades territoriales, aprobadas por el Consejo General del IECM, para efectos de Participación Ciudadana.
+                  Ámbito territorial exclusivo para la Elección de Comisiones de Participación Comunitaria (COPACO), así como para las consultas sobre presupuesto participativo.
+                </p>
+
+              </div> -->
+
+              <!-- BLOQUE 4 -->
+              <!-- <div class="infografia-menu-lateral">
+
+                <h3>Marco Geográfico Electoral Local (MGEL):</h3>
+                <p class="texto-infografia-glosario">
+                  Ámbito territorial integrado por el territorio de la Ciudad de México, con la división de las 16 demarcaciones territoriales,
+                  para la elección de alcalde o alcaldesa; la delimitación de los 33 distritos electorales uninominales locales, para elegir a 33 diputados o diputadas uninominales;
+                  121 circunscripciones, para la designación de 121 concejales o concejalas de mayoría relativa; y 5 mil 579 secciones electorales.
+                </p>
+
+                <h3>Participación ciudadana:</h3>
+                <p class="texto-infografia-glosario">
+                  Conjunto de actividades mediante las cuales toda persona tiene el derecho individual o colectivo para intervenir en las decisiones públicas,
+                  deliberar, discutir y cooperar con las autoridades, así como para incidir en la formulación, ejecución y evaluación de las políticas y actos de gobierno
+                  de manera efectiva, amplia, equitativa, democrática y accesible.
+                </p>
+
+                <h3>Persona no binaria:</h3>
+                <p class="texto-infografia-glosario">
+                  Personas que no se identifican como varones ni como mujeres, sino con una identidad de género no binaria, se encuentra fuera del patrón binario hombre-mujer,
+                  ya que comprende que la identidad no es únicamente femenina o masculina.
+                </p>
+
+                <h3>Población:</h3>
+                <p class="texto-infografia-glosario">
+                  Personas con características diversas, que comparten entre otras cosas el territorio, la historia, el idioma y algunas costumbres.
+                </p>
+
+              </div> -->
+
+              <!-- BLOQUE 5 -->
+              <!-- <div class="infografia-menu-lateral">
+
+                <h3>Pueblo y / o barrio originario:</h3>
+                <p class="texto-infografia-glosario">
+                  Los pueblos y barrios originarios son aquellos que descienden de poblaciones asentadas en el territorio actual de la Ciudad de México desde antes de la colonización
+                  y del establecimiento de las fronteras actuales y que conservan sus propias instituciones sociales, económicas, culturales y políticas, sistemas normativos propios,
+                  tradición histórica, territorialidad y cosmovisión, o parte de ellas.
+                </p>
+
+                <h3>Reescalamiento:</h3>
+                <p class="texto-infografia-glosario">
+                  Técnica estadística que consiste en transformar los niveles de las variables para llevarlos al intervalo [0,1],
+                  empleando la distancia entre los valores máximos y mínimos que la variable adquiere considerando todos los datos de la variable conjuntamente.
+                </p>
+
+                <h3>Sección electoral:</h3>
+                <p class="texto-infografia-glosario">
+                  Fracción territorial de los distritos electorales uninominales para la inscripción de los ciudadanos en el Padrón Electoral y en las listas nominales de electores.
+                  Cada sección tendrá como mínimo 100 electores y como máximo 3,000.
+                </p>
+
+                <h3>Sistema de Información Geográfica:</h3>
+                <p class="texto-infografia-glosario">
+                  Sistema de información geográfica (SIG) es un entorno para recopilar, gestionar y analizar datos.
+                  Arraigado en la ciencia de la geografía, el SIG integra muchos tipos de datos.
+                  Analiza la ubicación espacial y organiza capas de información en visualizaciones usando mapas y escenas 3D.
+                  Con esta capacidad única, los SIG revelan conocimientos más profundos de los datos, como patrones, relaciones y situaciones,
+                  ayudando a los usuarios a tomar decisiones más inteligentes.
+                </p>
+
+                <h3>Unidades Territoriales:</h3>
+                <p class="texto-infografia-glosario">
+                  Ámbito territorial clasificado en colonias, unidades habitacionales, pueblos y barrios originarios que establezcan el IECM,
+                  para efectos de participación ciudadana (Ley de participación ciudadana de la Ciudad de México).
+                </p>
+
+              </div> -->
+
+            </div>
+
+        </div>
+
+        <button class="close-modal">&times;</button>
+
+    </div>
+
+    <!--REFERENCIAS-->
+    <div id="impress-modal-referencias" class="modal hidden impress-modal">
+
+
+        <div id="impress-referencias" class="impress-referencias">
+            <div class="marca-central"></div>
+            <div class="marca-derecha"></div>
+
+            <div class="fuentes-section-referencias">
+
+                <!-- REFERENCIAS -->
+                <div class="imagenes-referencias">
+
+                    <h2>Referencias</h2>
+
+                    <!-- 1 -->
+                    <p class="texto-infografia-glosario">
+                        Acuerdo IECM/ACU-CG-110/2025, cuerdo del Consejo General del Instituto Electoral de la Ciudad de México, por el que se aprueba el ajuste al Marco Geográfico de Participación Ciudadana 2025, así como al Catálogo de Unidades Territoriales 2025, en términos de la inscripción de Pueblos y Barrios Originarios al Sistema de Registro de la Secretaría de Pueblos y Barrios Originarios, y Comunidades Indígenas Residentes en la Ciudad de México, México, IECM, 17 de diciembre de 2025, en 
+                        <a href="https://www.iecm.mx/www/taip/cg/acu/2025/IECM-ACU-CG-110-2025.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 17 de diciembre de 2025].
+                    </p>
+
+                     <!-- 2 -->
+                    <p class="texto-infografia-glosario">
+                        Acuerdo IECM/ACU-CG-100/2025, Acuerdo del Consejo General del Instituto Electoral de la Ciudad de México, por el que se aprueba el Marco Geográfico de Participación Ciudadana 2025, así como el Catálogo de Unidades Territoriales 2025 del Instituto Electoral de la Ciudad de México, México, IECM, 30 de octubre de 2025, en 
+                        <a href="https://www.iecm.mx/www/taip/cg/acu/2025/IECM-ACU-CG-100-2025.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 03 de Noviembre 2025].
+                    </p>
+
+                    <!-- 3-->
+                    <p class="texto-infografia-glosario">
+                    Aviso por el que se da a conocer la procedencia de inscripción de 15 pueblos y 22 barrios originarios en el Sistema de Registro y Documentación de Pueblos y Barrios Originarios y Comunidades Indígenas Residentes de la Ciudad de México, 16 de diciembre de 2025, en 
+                    <a href="https://data.consejeria.cdmx.gob.mx/portal_old/uploads/gacetas/9c4dda59435ee24bf3af1a9d4f0271dc.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 17 de diciembre de 2025].
+                    </p>
+
+                    <!-- 4 -->
+                    <p class="texto-infografia-glosario">
+                        Aviso por el que se da a conocer la procedencia de la inscripción de 1 pueblo originario en el Sistema de Registro y Documentación de Pueblos y Barrios Originarios y Comunidades Indígenas Residentes de la Ciudad de México, Gobierno de la Ciudad de México, 2 de octubre de 2024, en 
+                        <a href="https://data.consejeria.cdmx.gob.mx/portal_old/uploads/gacetas/aa9cac9ad13b209125f260cf1612f42a.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 30 de Junio 2025].
+                    </p>
+
+                    <!-- 5 -->
+                    <p class="texto-infografia-glosario">
+                        Aviso por el que se da a conocer la procedencia de la inscripción de 5 pueblos originarios en el Sistema de Registro y Documentación de Pueblos y Barrios Originarios y Comunidades Indígenas Residentes de la Ciudad de México, Gobierno de la Ciudad de México, 5 de agosto de 2024, en 
+                        <a href="https://sepi.cdmx.gob.mx/storage/app/uploads/public/66b/213/1f8/66b2131f87c42919052048.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 12 de Junio 2025].
+                    </p>
+
+                    <!-- 6 -->
+                    <p class="texto-infografia-glosario">
+                        Aviso por el que se da a conocer la procedencia de la inscripción de 50 pueblos originarios en el Sistema de Registro y Documentación de Pueblos y Barrios Originarios y Comunidades Indígenas Residentes de la Ciudad de México, Gobierno de la Ciudad de México, 11 de mayo de 2023, en 
+                        <a href="https://data.consejeria.cdmx.gob.mx/portal_old/uploads/gacetas/5160802c3575e70d6d8db2866666c60a.pdf" target="_blank">consultar aquí</a>,[consulta hecha el 08 de Agosto 2025].
+                    </p>
+
+                    <!-- 7 -->
+                    <p class="texto-infografia-glosario">
+                        Código de Instituciones y Procedimientos Electorales de la Ciudad de México, actualización del 23 de diciembre de 2024, Gobierno de la Ciudad de México, en 
+                        <a href="https://www.iecm.mx/www/marconormativo/docs/CIyPE_CDMX_2024-2.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 04 de Junio 2025].
+                    </p>
+
+                    <!-- 8 -->
+                    <p class="texto-infografia-glosario">
+                        Consejo Nacional de Evaluación de la Política de Desarrollo Social. Manual para el Diseño y la Construcción de Indicadores. Instrumentos principales para el monitoreo de programas sociales de México, México, DF, 2013, en 
+                        <a href="https://www.coneval.org.mx/Informes/Coordinacion/Publicaciones%20oficiales/MANUAL_PARA_EL_DISENO_Y_CONTRUCCION_DE_INDICADORES.pdf" target="_blank">consultar aquí</a> [consulta hecha el 03 de junio de 2025].
+                    </p>
+
+                    <!-- 9 -->
+                    <p class="texto-infografia-glosario">
+                        Constitución Política de la Ciudad de México, actualización del 27 de agosto de 2025, Gobierno de la Ciudad de México, en 
+                        <a href="https://www.iecm.mx/www/marconormativo/docs/CPCDMX-04_2025.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 02 de Junio 2025].
+                    </p>
+
+                    <!-- 10 -->
+                    <p class="texto-infografia-glosario">
+                        Constitución Política de los Estados Unidos Mexicanos, actualización del 15 de octubre de 2005, Cámara de Diputados del H. Congreso de la Unión, en 
+                        <a href="https://www.diputados.gob.mx/LeyesBiblio/pdf/CPEUM.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 15 de Junio 2025].
+                    </p>
+
+                    <!-- 11 -->
+                    <p class="texto-infografia-glosario">
+                        Decreto, que contiene el Programa Delegacional de Desarrollo Urbano para la Delegación Cuauhtémoc, Gobierno del distrito Federal, 29 de septiembre de 2008, en 
+                        <a href="https://data.consejeria.cdmx.gob.mx/portal_old/uploads/gacetas/DECRETOCUAUHTEMOC_P1.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 01 de Julio de 2025].
+                    </p>
+
+                    <!-- 12 -->
+                    <p class="texto-infografia-glosario">
+                        Decreto. Autoridad de la Zona Patrimonio Mundial Natural y Cultural de la Humanidad en Xochimilco, Tláhuac y Milpa Alta, como órgano de apoyo a las actividades de la jefatura de gobierno en las delegaciones Xochimilco, Tláhuac y Milpa Alta de la Ciudad de México, Gobierno del Distrito Federal,11 de diciembre de 2012, en 
+                        <a href="https://data.consejeria.cdmx.gob.mx/portal_old/uploads/gacetas/50c6c6f130ff1.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 08 de Junio 2025].
+                    </p>
+
+                    <!-- 13 -->
+                    <p class="texto-infografia-glosario">
+                        Espinosa-Zúñiga, J.J., "Aplicación de algoritmos Random Forest y XGBoost en una base de solicitudes de tarjetas de crédito, Ingeniería, investigación y tecnología, vol. XXVI, núm 4, México, octubre-diciembre 2025 en 
+                        <a href="https://doi.org/10.22201/fi.25940732e.2020.21.3.022" target="_blank">consultar aquí</a>, [consulta hecha el 6 de junio de 2025].
+                    </p>
+
+                    <!-- 14 -->
+                    <p class="texto-infografia-glosario">
+                        ESRI. Diccionario SIG, en 
+                        <a href="https://support.esri.com/es-es/gis-dictionary/search?q=mapa+de+calor" target="_blank">consultar aquí</a>, [consulta hecha el 10 de julio de 2025].
+                    </p>
+
+                    <!-- 15 -->
+                    <p class="texto-infografia-glosario">
+                        Gobierno de México, Secretaria de Hacienda y Crédito Público, Glosario de métodos de cálculo para indicadores, México, en 
+                        <a href="https://www.transparenciapresupuestaria.gob.mx/work/models/PTP/Capacitacion/glosario_formulas_2015.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 4 de junio de 2025].
+                    </p>
+
+                    <!-- 16 -->
+                    <p class="texto-infografia-glosario">
+                        Instituto Electoral de la Ciudad de México, Sistema de Consulta del Marco Geográfico de Participación Ciudadana 2025, México, IECM, en 
+                        <a href="https://scmgpc.iecm.mx/" target="_blank">consultar aquí</a>, [consulta hecha el 14 de Junio de 2025].
+                    </p>
+
+                    <!-- 17 -->
+                    <p class="texto-infografia-glosario">
+                        Instituto Nacional de Estadística y geografía, Metodología de Indicadores de la Serie Histórica Censal, INEGI 2017, en 
+                        <a href="https://www.inegi.org.mx/contenidos/programas/ccpv/cpvsh/doc/serie_historica_censal_met_indicadores.pdf" target="_blank">consultar aquí</a> [consulta hecha el 9 de junio de 2025].
+                    </p>
+
+                    <!-- 18 -->
+                    <p class="texto-infografia-glosario">
+                        Instituto Nacional de Estadística y Geografía, Cuéntame de México, La población afromexicana o afrodescendiente en México, México, INEGI, en 
+                        <a href="https://cuentame.inegi.org.mx/explora/poblacion/afrodescendientes/" target="_blank">consultar aquí</a> [consulta hecha el 4 de junio de 2025].
+                    </p>
+
+                    <!-- 19 -->
+                    <p class="texto-infografia-glosario">
+                        Instituto Nacional de Estadística y Geografía, Marco Geoestadístico, INEGI, México, en 
+                        <a href="https://www.inegi.org.mx/temas/mg/" target="_blank">consultar aquí</a> [consulta hecha el 6 de junio de 2025].
+                    </p>
+
+                    <!-- 20 -->
+                    <p class="texto-infografia-glosario">
+                        Instituto Nacional de Estadística y Geografía, Principales resultados por AGEB y manzana urbana. Ciudad de México (datos 2020), México, INEGI, en 
+                        <a href="https://www.inegi.org.mx/app/descarga/ficha.html?tit=326080&ag=0&f=csv" target="_blank">consultar aquí</a> [consulta hecha el 6 de junio de 2025].
+                    </p>
+
+                    <!-- 21 -->
+                    <p class="texto-infografia-glosario">
+                        Instituto Nacional de Estadística y Geografía, Principales resultados por localidad (ITER). Ciudad de México (datos 2020), México, INEGI, en 
+                        <a href="https://www.inegi.org.mx/app/descarga/ficha.html?tit=325907&ag=0&f=csv" target="_blank">consultar aquí</a> [consulta hecha el 6 de junio de 2025].
+                    </p>
+
+                    <!-- 22 -->
+                    <p class="texto-infografia-glosario">
+                        Instituto Nacional de Geografía y Estadística, Glosario, México, en 
+                        <a href="https://www.inegi.org.mx/app/glosario/default.html?p=Topo50#letraGloCse" target="_blank">consultar aquí</a> [consulta hecha el 11 de agosto de 2025].
+                    </p>
+
+                    <!-- 23 -->
+                    <p class="texto-infografia-glosario">
+                        Instituto Nacional de Geografía y Estadística. Guía metodológica, México, en 
+                        <a href="https://www.inegi.org.mx/programas/ccpv/2020/tableros/panorama/guia/" target="_blank">consultar aquí</a> [consulta hecha el 11 de junio de 2025].
+                    </p>
+
+                    <!-- 24 -->
+                    <p class="texto-infografia-glosario">
+                        Ley de Participación Ciudadana de la Ciudad de México, actualización del 17 de diciembre de 2024, en 
+                        <a href="https://www.iecm.mx/www/marconormativo/docs/8.Ley-PC-CDMX.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 10 de Junio de 2025].
+                    </p>
+
+                    <!-- 25 -->
+                    <p class="texto-infografia-glosario">
+                        Ley General del equilibrio ecológico y la protección al ambiente, actualización del 1 de abril de 2024, en 
+                        <a href="https://www.diputados.gob.mx/LeyesBiblio/pdf/LGEEPA.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 14 de Junio de 2025].
+                    </p>
+
+                    <!-- 26 -->
+                    <p class="texto-infografia-glosario">
+                        Schuschny Andrés y Soto Humberto, Guía metodológica. Diseño de indicadores compuestos de desarrollo sostenible, Comisión Económica para América Latina y el Caribe, Santiago de Chile, 2009, en 
+                        <a href="https://repositorio.cepal.org/server/api/core/bitstreams/a627f68b-9902-4fa2-a516-912a903ecf22/content" target="_blank">consultar aquí</a> [consulta hecha el 3 de junio de 2025].
+                    </p>
+
+                    <!-- 27 -->
+                    <p class="texto-infografia-glosario">
+                        Secretaría del Medio Ambiente (SEDEMA), Desarrollo urbano, vivienda y territorio, Medio Ambiente y Cambio Climático, Ciudad de México, 2018, en 
+                        <a href="https://datos.cdmx.gob.mx/dataset/suelo-de-conservacion" target="_blank">consultar aquí</a> [consulta hecha el 11 de junio de 2025].
+                    </p>
+
+                    <!-- 28 -->
+                    <p class="texto-infografia-glosario">
+                        Sistema Nacional de Información Estadística y Geografía, Glosario del SNIEG 2023, México, en 
+                        <a href="https://www.snieg.mx/Documentos/Normatividad/Historica/Glosario_Normatividad_SNIEG_2023.PDF" target="_blank">consultar aquí</a> [consulta hecha el 21 de julio de 2025].
+                    </p>
+
+                    <!-- 29 -->
+                    <p class="texto-infografia-glosario">
+                        Universidad Abierta y a Distancia de México, "Demografía. Unidad 1, El conocimiento de la demografía", México, en 
+                        <a href="https://dmd.unadmexico.mx/contenidos/DCSBA/BLOQUE1/GSS/03/HDEM/unidad_01/descargables/HDEM_U1_Contenido.pdf" target="_blank">consultar aquí</a>, [consulta hecha el 6 de junio de 2025].
+                    </p>
+
+                </div>
+                
+                
+
+            </div>
+
+            <!-- <div class="fuentes-section-referencias">
+
+            <h2>Normativa Aplicable</h2>
+
+
+            <p class="texto-infografia-glosario">
+                Constitución Política de los Estados Unidos Mexicanos, Constitución publicada en el Diario Oficial de la Federación el 5 de febrero de 1917, Ultima reforma publicada DOF 30-09-24, en
+                <a href="https://www.diputados.gob.mx/LeyesBiblio/pdf/CPEUM.pdf" target="_blank">Consultar aquí</a>
+            </p>
+
+            <p class="texto-infografia-glosario">
+                Constitución Política de la Ciudad de México, Publicada en la Gaceta Oficial de la Ciudad de México el 5 de febrero de 2017, Última reforma publicada en la G. O CDMX, el 27 de agosto de 2025, en
+                <a href="https://www.iecm.mx/www/marconormativo/docs/CPCDMX-04_2025.pdf" target="_blank">Consultar aquí</a>
+            </p>
+
+            <p class="texto-infografia-glosario">
+                Código de Instituciones y Procedimientos Electorales de la Ciudad de México, Última reforma publicada en la G.O. CDMX, el 23 de diciembre de 2024, en
+                <a href="https://www.iecm.mx/www/marconormativo/docs/CIyPE_CDMX_2024-2.pdf" target="_blank">Consultar aquí</a>
+            </p>
+
+            <p class="texto-infografia-glosario">
+                Ley de Participación Ciudadana de la Ciudad de México, última fecha de modificación publicada el 17 de diciembre de 2024, en
+                <a href="https://www.iecm.mx/www/marconormativo/docs/8.Ley-PC-CDMX.pdf" target="_blank">Consultar aquí</a>
+            </p>
+
+            <p class="texto-infografia-glosario">
+                Aviso por el que se da a conocer la procedencia de la inscripción de 50 pueblos originarios en el Sistema de Registro y Documentación de Pueblos y Barrios Originarios y Comunidades Indígenas Residentes de la Ciudad de México, publicado en la Gaceta Oficial de la Ciudad de México, número 1102 Bis de fecha 11 de mayo de 2023, en
+                <a href="https://data.consejeria.cdmx.gob.mx/portal_old/uploads/gacetas/5160802c3575e70d6d8db2866666c60a.pdf" target="_blank">Consultar aquí</a>
+            </p>
+
+            <p class="texto-infografia-glosario">
+                Aviso por el que se da a conocer la procedencia de la inscripción de 5 pueblos originarios en el Sistema de Registro y Documentación de Pueblos y Barrios Originarios y Comunidades Indígenas Residentes de la Ciudad de México, publicado en la Gaceta Oficial de la Ciudad de México, número 1416 Bis de fecha 05 de agosto de 2024, en
+                <a href="https://sepi.cdmx.gob.mx/storage/app/uploads/public/66b/213/1f8/66b2131f87c42919052048.pdf" target="_blank">Consultar aquí</a>
+            </p>
+
+            <p class="texto-infografia-glosario">
+                Aviso por el que se da a conocer la procedencia de la inscripción de 1 pueblo originario en el Sistema de Registro y Documentación de Pueblos y Barrios Originarios y Comunidades Indígenas Residentes de la Ciudad de México, publicado en la Gaceta Oficial de la Ciudad de México número 1456 BIS, de fecha 2 de octubre de 2024, en
+                <a href="https://data.consejeria.cdmx.gob.mx/portal_old/uploads/gacetas/aa9cac9ad13b209125f260cf1612f42a.pdf" target="_blank">Consultar aquí</a>
+            </p>
+
+            <p class="texto-infografia-glosario">
+                Acuerdo del Consejo General del Instituto Electoral de la Ciudad de México por el que se aprueba el Marco Geográfico de Participación Ciudadana 2025, mediante ACU/ACU-CG-100/2025 aprobado el 30 de octubre de 2025 en
+                <a href="https://www.iecm.mx/www/taip/cg/acu/2025/IECM-ACU-CG-100-2025.pdf" target="_blank">Consultar aquí</a>
+            </p>
+
+            </div> -->
+
+        </div>
+
+        <button class="close-modal">&times;</button>
+
+
+        <!-- <button onclick="closeOverlay3()">Cerrar</button> -->
+
+    </div>
+
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/gh/impress/impress.js@2.0.0/js/impress.min.js"></script>
+    <script src="js/index.js"></script>
+
+    <!-- Contenedor del mapa (oculto inicialmente) -->
+    <div id="mapa-container" class="mapa-fullscreen hidden">
+        <button id="cerrar-mapa" class="btn-cerrar-mapa">✕ Cerrar Mapa</button>
+        <div id="mapa"></div>
+    </div>
+
+    <!-- Modal de Bienvenida para el Mapa -->
+        <div class="modal-overlay-mapa" id="welcomeModalMapa" style="display: none;">
+
+            <div class="welcome-modal-mapa">
+                <!-- Header -->
+                <div class="modal-header-mapa">
+                    <button class="close-btn-mapa" onclick="cerrarModalMapa()">&times;</button>
+                    <h1 class="modal-title-mapa">¡Conoce tu Unidad Territorial!</h1>
+                    <p class="modal-subtitle-mapa">Instituto Electoral de la Ciudad de México</p>
+                </div>
+
+                <!-- Contenido -->
+                <div class="modal-content-mapa">
+                    <p class="intro-text-mapa">
+                        Descubre las <b>características geoelectorales y de participación ciudadana</b>
+                        de las Unidades Territoriales a través de dos métodos de búsqueda diseñados para facilitar la navegación:
+                    </p>
+
+                    <!-- Métodos de búsqueda -->
+                    <div class="methods-container-mapa">
+                        <!-- Método 1: Por Sección Electoral -->
+                        <div class="method-card-mapa">
+                            <div class="method-icon-mapa uno" aria-hidden="true">
+                                <!-- SVG: ID / tarjeta -->
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Identificación">
+                                    <title>Identificación</title>
+                                    <rect x="1.5" y="3" width="21" height="14" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                                    <circle cx="7.5" cy="9.5" r="2" fill="currentColor"/>
+                                    <path d="M11 8.5h7M11 11.5h7" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
+                                    <rect x="1.5" y="18" width="21" height="2.5" rx="0.75" fill="currentColor" opacity="0.15"/>
+                                </svg>
+                            </div>
+                            <h3 class="method-title-mapa">Búsqueda por Sección Electoral</h3>
+                            <p class="method-description-mapa">
+                                Para encontrar tu Unidad Territorial, usa la clave de tu sección electoral que aparece en tu credencial para votar.
+                            </p>
+                            <ul class="method-steps-mapa">
+                                <li>Ingresa tu clave de sección electoral</li>
+                                <li>Si la sección es compartida, selecciona en el mapa la unidad territorial de tu interés</li>
+                                <li>Conoce las características geoelectorales y de participación ciudadana y accede a sus datos sociodemográficos</li>
+                            </ul>
+                        </div>
+
+                        <!-- Método 2: Por Ubicación Geográfica -->
+                        <div class="method-card-mapa">
+                            <div class="method-icon-mapa" aria-hidden="true">
+                                <!-- SVG: Mapa plegado -->
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mapa">
+                                    <title>Mapa</title>
+                                    <path d="M3 6v12l6-2 6 2 6-5V3l-6 2-6-2L3 6z" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linejoin="round"/>
+                                    <path d="M9 4v12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                                    <path d="M15 6v12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <h3 class="method-title-mapa">Navegación Geográfica</h3>
+                            <p class="method-description-mapa">
+                                Navega paso a paso desde tu demarcación hasta tu unidad territorial.
+                            </p>
+                            <ul class="method-steps-mapa">
+                                <li>Selecciona tu Demarcación Territorial</li>
+                                <!-- <li>Elige tu Distrito Electoral Local</li> -->
+                                <li>Ubica tu Unidad Territorial</li>
+                                <li>Conoce las características geoelectorales y de participación ciudadana y accede a sus datos sociodemográficos</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Sección de beneficios -->
+                    <div class="benefits-section-mapa">
+                        <h3 class="benefits-title-mapa">¿Qué información encontrarás?</h3>
+                        <ul class="benefits-list-mapa">
+                            <li>Ámbito territorial de la UT</li>
+                            <li>Secciones electorales que integran la UT</li>
+                            <li>Datos de participación ciudadana de la UT</li>
+                            <li>Datos sociodemográficos de la UT</li>
+                            <li>Mapas Temáticos</li>
+                            <li>Información adicional</li>
+                        </ul>
+                    </div>
+
+                    <!-- Botón de acción -->
+                    <button class="action-button-mapa" onclick="cerrarModalMapa()">
+                        ¡Comenzar búsqueda!
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="mapa"></div>
+    
+
+    <!-- Scripts del mapa -->
+    <script src="js/selector-mapa.js"></script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCw42oKA6idOiNV51RXLHzRwYwn7MerDBI&loading=async">
+    </script>
+
+</body>
+</html>

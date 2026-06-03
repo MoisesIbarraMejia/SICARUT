@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Presentación - Unidades Territoriales</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Impress.js -->
+  <script src="https://cdn.jsdelivr.net/npm/impress.js@1.1.0/js/impress.min.js"></script>
+
+  <style>
+    
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #aa65dc, #6e46a2);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #ffffff;
+      overflow: hidden;
+    }
+
+    #impress {
+      position: relative;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    .step {
+      position: absolute;
+      width: 80%;
+      max-width: 800px;
+      padding: 30px;
+      margin: auto;
+      text-align: left;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .step h3 {
+      margin-bottom: 1em;
+      font-size: 1.6em;
+      color: #fff8c6;
+    }
+
+    .step p {
+      font-size: 1em;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+<div id="impress">
+  <div id="intro" class="step" data-x="0" data-y="0">
+    <h3>¿Para qué es esta herramienta?</h3>
+    <p>
+      El Instituto Electoral de la Ciudad de México (IECM), como organismo público autónomo y conforme a las actividades orientadas a la investigación e innovación en la generación de información que sirva como punto de referencia para conocer el ámbito distrital electoral local de la Ciudad de México, vigente; realizó el documento Características de los 33 Distritos Electorales Locales que conforman la Ciudad de México, con el propósito de proporcionar información sociodemográfica por distrito electoral local, a partir de la información generada por el Instituto Nacional de Estadística y Geografía (INEGI) asociada a la cartografía del Instituto Nacional Electoral (INE).
+    </p>
+  </div>
+
+  <div class="step" data-x="1500" data-y="0" data-rotate="5" data-scale="1.1">
+    <h3>¿Cómo surgió?</h3>
+    <p>
+      El desarrollo de esta herramienta surge como necesidad de facilitar la reflexión sobre la cultura del espacio geográfico; orientarse, ubicar los territorios, ordenarlos, describirlos, establecer relaciones, conocer lo que hay dentro de, son prácticas que han decantado, en cada ecúmene (allí donde las condiciones naturales permiten la organización de la vida en sociedad), una cierta imagen del espacio, un imago mundi.
+    </p>
+  </div>
+
+  <div class="step" data-x="3000" data-y="200" data-rotate="-10" data-scale="1.2">
+    <h3>¿Por qué es importante?</h3>
+    <p>
+      Facilita la reflexión sobre la cultura del espacio geográfico y su representación cartográfica.
+    </p>
+  </div>
+
+  <div class="step" data-x="4500" data-y="0" data-rotate="15" data-scale="1.1">
+    <h3>¿Qué contiene?</h3>
+    <p>
+      Indicadores sociodemográficos: población, vivienda, educación, economía, migración, salud y más.
+    </p>
+  </div>
+
+  <div class="step" data-x="6000" data-y="0" data-rotate="-5">
+    <h3>¿Para quién es útil?</h3>
+    <p>
+      Investigadores, académicos, partidos políticos, ciudadanía interesada en geografía electoral.
+    </p>
+  </div>
+</div>
+
+<script>
+  impress().init();
+</script>
+
+</body>
+</html>

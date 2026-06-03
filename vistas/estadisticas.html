@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sociodemográficos por UT</title>
+
+  <link rel="stylesheet" href="../styles/stylesVistas.css">
+
+  <!-- AJAX -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+  <!-- FONT AWESOME -->
+  <script src="https://kit.fontawesome.com/fcc20d642d.js" crossorigin="anonymous"></script>
+
+  <!-- SWEET ALERT -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- CHART -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+ <!-- Agregar en el <head> después de Chart.js -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+
+  <!-- Mapa -->
+  <div id="map-container">
+    <div id="map"></div>
+  </div>
+  <!-- Botón para regresar al selector de UT -->
+  <button id="btn-regresar-selector" class="btn-regresar-selector" onclick="regresarAlSelector()">
+      ← Seleccionar otra UT
+  </button>
+
+  <!-- botones flotantes -->
+  <!-- <div id="btn-mapas" class="hamburger" onclick="toggleSidebar('menu-mapas-calor')">☰ Caracteristicas de la <br>Unidad Territorial Seleccionada</div> -->
+  <div id="btn-mapas" class="hamburger" 
+      onclick="toggleSidebar('menu-mapas-calor')" 
+      style="text-align:center; line-height:1.6; letter-spacing:0.5px;">
+    <span style="display:block;">☰ Características de la</span>
+    <span style="display:block; margin-top:4px;">Unidad Territorial Seleccionada</span>
+  </div>
+
+  <div id="btn-indicadores" style="display: none;" class="hamburger" onclick="toggleSidebar('menu-indicadores')">☰ Indicadores por Demarcación</div>
+
+  <!-- menu mapas de calor -->
+  <div class="sidebar" id="menu-mapas-calor">
+
+      <!-- menu dinamico -->
+      <div id="menu-principal-calor">
+        <h1 id="titulo-temas">Temas</h1>
+      </div>
+
+      <!-- submenu -->
+      <div id="submenu-calor" style="display:none;">
+        <h1 class="titulo-submenu-calor" >Subtemas</h1>
+        <div id="calor" class="back-btn" onclick="volverMenuPrincipal(this.id)">⬅ Regresar</div>
+        <div class="menu-title" id="submenu-title-calor"></div>
+        <div id="submenu-items-calor"></div>
+      </div>
+
+      <!-- Información de UT seleccionada - AL FINAL -->
+      <div id="info-ut-seleccionada" class="info-ut-container">  
+        <div class="info-ut-clave" id="info-clave-ut">--</div>
+        <div class="info-ut-nombre" id="info-nombre-ut"></div>
+
+        <!-- Secciones -->
+        <!-- <div class="info-ut-secciones">
+            <div id="info-secciones-completas"></div>
+            <div id="info-secciones-parciales"></div>
+        </div> -->
+      </div>
+
+  </div> 
+  
+
+  <!-- TABLA PARA DESCARGAR LOS INDICADORES -->
+  <div id="tabla-indices"></div>
+
+
+  <!-- menu indicadores -->
+  <div class="sidebar" id="menu-indicadores">
+
+      <!-- menu dinamico -->
+      <div id="menu-principal-indicadores">
+        <h1 id="titulo-indicadores-demarcacion">Indicadores por Demarcación</h1>
+      </div>
+
+      <!-- submenu -->
+      <div id="submenu-indicadores" style="display:none;">
+
+        <h1 class="titulo-submenu-indicadores">Indicadores por Demarcación</h1>
+        <div id="indicadores" class="back-btn" onclick="volverMenuPrincipal(this.id)">← Regresar</div>
+        <div class="menu-title" id="submenu-title-indicadores"></div>
+        <div id="submenu-items-indicadores"></div>
+        
+        <!-- Contenedor de gráfica -->
+        <div id="graficaContainer" style="width:100%; max-width:800px; margin-top:10px;">
+            <canvas id="graficaLineasDemarcacion"></canvas>
+        </div>
+
+      </div>
+
+  </div>
+
+ 
+  <!-- NUEVO CONTENEDOR PARA LA TABLA - FUERA DEL SIDEBAR -->
+  <!-- <div class="tabla-ut-externa" id="tabla-ut-externa" style="display: none;">
+    <div class="informacion-ut-container">
+      <h3 style="
+          color: #520c8b; 
+          font-family: 'Poppins', sans-serif; 
+          font-weight: 700; 
+          font-size: 14px; 
+          margin-bottom: 15px;
+          text-align: center;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+      ">
+          Información de la Unidad Territorial
+      </h3>
+      
+      <div class="tabla-container" style="
+          background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
+          border-radius: 8px;
+          box-shadow: 0 4px 15px rgba(82, 12, 139, 0.15);
+          padding: 0px;
+          border: 1px solid rgba(82, 12, 139, 0.1);
+          overflow: hidden;
+          max-height: 300px;
+          overflow-y: auto;
+      ">
+          <table id="tabla-info-ut" style="
+              width: 100%;
+              border-collapse: collapse;
+              font-family: 'Poppins', sans-serif;
+              font-size: 12px;
+          "> -->
+              <!-- Tu tabla completa aquí con todas las filas -->
+              <!-- <tbody>
+                  <tr style="border-bottom: 1px solid #e5e7eb;">
+                      <td style="padding: 4px 10px; font-weight: 600; color: #374151; background: #f8fafc; border-right: 1px solid #e5e7eb;">Demarcación:</td>
+                      <td id="dem-territ" style="padding: 4px 10px; color: #1f2937; font-weight: 500;">-</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #e5e7eb;">
+                      <td style="padding: 4px 10px; font-weight: 600; color: #374151; background: #f8fafc; border-right: 1px solid #e5e7eb;">Distrito:</td>
+                      <td id="dtto-loc" style="padding: 4px 10px; color: #1f2937; font-weight: 500;">-</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #e5e7eb;">
+                      <td style="padding: 4px 10px; font-weight: 600; color: #374151; background: #f8fafc; border-right: 1px solid #e5e7eb;">Clave UT:</td>
+                      <td id="cve-ut" style="padding: 4px 10px; color: #1f2937; font-weight: 500; font-family: 'Courier New', monospace;">-</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #e5e7eb;">
+                      <td style="padding: 4px 10px; font-weight: 600; color: #374151; background: #f8fafc; border-right: 1px solid #e5e7eb;">Nombre:</td>
+                      <td id="nombre-ut" style="padding: 4px 10px; color: #1f2937; font-weight: 600; text-transform: uppercase;">-</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #e5e7eb;">
+                      <td style="padding: 4px 10px; font-weight: 600; color: #374151; background: #f8fafc; border-right: 1px solid #e5e7eb;">Unidad territorial:</td>
+                      <td id="tipo-ut" style="padding: 4px 10px; color: #1f2937; font-weight: 500;">-</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #e5e7eb;">
+                      <td style="padding: 4px 10px; font-weight: 600; color: #374151; background: #f8fafc; border-right: 1px solid #e5e7eb;">Secciones Completas:</td>
+                      <td id="secciones-completas" style="padding: 4px 10px; color: #1f2937; font-weight: 500; font-family: 'Courier New', monospace;">-</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #e5e7eb;">
+                      <td style="padding: 4px 10px; font-weight: 600; color: #374151; background: #f8fafc; border-right: 1px solid #e5e7eb;">Secciones Parciales:</td>
+                      <td id="secciones-parciales" style="padding: 4px 10px; color: #1f2937; font-weight: 500; font-family: 'Courier New', monospace;">-</td>
+                  </tr>
+                  <tr>
+                      <td style="padding: 4px 10px; font-weight: 600; color: #374151; background: #f8fafc; border-right: 1px solid #e5e7eb;">Lista Nominal<br>30/Jun/2025:</td>
+                      <td id="lista-30" style="padding: 4px 10px; color: #059669; font-weight: 600;">-</td>
+                  </tr>
+              </tbody>
+          </table>
+      </div>
+    </div>
+  </div> -->
+
+  
+  <script>
+    // Llamar a la función cuando se cargue la página (agregar al final del DOMContentLoaded existente)
+    // Prevenir que clics en la tabla cierren el sidebar
+    document.addEventListener('DOMContentLoaded', function() {
+        const tablaExterna = document.getElementById('tabla-ut-externa');
+        if (tablaExterna) {
+            tablaExterna.addEventListener('click', function(e) {
+                e.stopPropagation(); // Evitar que el clic se propague
+            });
+        }
+        
+        cargarDatosTablaUT();
+    });
+  </script>
+
+  <!-- Scripts -->
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCw42oKA6idOiNV51RXLHzRwYwn7MerDBI&loading=async&libraries=visualization,geometry&callback=initMap"></script>
+  <script src="../js/estadisticas.js"></script>
+</body>
+</html>

@@ -1,0 +1,1007 @@
+<link rel="stylesheet" href="styles/stylesIndex.css">
+
+<div class="nota-metodologica">
+
+    <!-- <div class="cobertura"> -->
+
+        <!-- BOTON PARA CERRAR LA NOTA METODOLOGICA -->
+        <div class="titulo-boton">
+
+
+            <div class="hijo">
+                <button id="cerrar-nota-metodologica" class="close-modal-notaMetodologica">&times;</button>
+            </div>
+
+        </div>
+
+    <div class="cobertura"> 
+        
+        <!-- TITULO -->
+        <div class="titulo-nota">
+
+            <div class="nine">
+                <h1>Nota Metodológica</h1>
+            </div>
+
+        </div>
+                    
+        <!-- DESCRIPCION DEL TRABAJO -->
+        <div class="presentacion">
+
+            <p>
+                El presente apartado contiene una breve descripción de las acciones y procedimientos que fueron utilizados para la elaboración del sitio 
+                <strong>Características de las Unidades Territoriales que conforman la Ciudad de México.</strong>
+                Consta de dos puntos: <strong>Recopilación de la información y</strong>  <strong>Procesamiento.</strong>
+            </p>
+
+        </div>
+        
+        <!-- TEXTO DIVIDIVO -->
+        <div class="container-infografia">
+                    
+            <!-- Recopilacion de la informacion -->
+            <section class="derecha">
+                
+
+                <div class="text">
+
+                    <h2>01 · Recopilación de la información</h2>
+
+                    <p>
+                        Los insumos principales para la elaboración del documento derivaron del Censo de Población y Vivienda 2020 del Instituto Nacional de Estadística y Geografía (INEGI), específicamente:
+                    </p>
+
+                    <ul class="custom-list">
+
+                        <li>
+
+                            Datos del Censo 2020 a escala ITER por localidad y AGEB por manzana urbana, los cuales contienen las variables sociodemográficas de población y vivienda desagregadas a nivel de manzana urbana. Estos datos se descargaron del sitio oficial de INEGI. <br>
+            
+                            <a href="https://www.inegi.org.mx/app/descarga/ficha.html?tit=325907&ag=0&f=csv " target="_blank">https://www.inegi.org.mx/app/descarga/ficha.html?tit=325907&ag=0&f=csv</a>
+                            <a href="https://www.inegi.org.mx/app/descarga/ficha.html?tit=326080&ag=0&f=csv" target="_blank">https://www.inegi.org.mx/app/descarga/ficha.html?tit=326080&ag=0&f=csv</a>
+        
+                        </li>
+        
+                        <li>
+        
+                            Marco Geoestadístico Nacional 2020, específicamente la capa de manzanas geoestadísticas urbanas 
+                            correspondiente al periodo censal 2020, la cual proporciona la geometría espacial de las manzanas urbanas. 
+                            Esta información se obtuvo del siguiente enlace: 
+                            <a href="https://www.inegi.org.mx/temas/mg/#mapas" target="_blank">https://www.inegi.org.mx/temas/mg/#mapas</a>
+                        
+                        </li>
+
+                    </ul>
+                    
+                    <p>
+                        Asimismo, se utilizó información de la lista nominal proporcionada por el Instituto Nacional Electoral como trabajo conjunto para la vinculación territorial de las unidades de análisis.
+                    </p>
+
+                </div>
+
+                <img src="imagenes/censo-2020.jpg" alt="Logo JavaScript">
+                
+            </section>
+
+            <section class="derecha">
+
+                
+                <img src="imagenes/planetLab.webp" alt="Planet Labs">
+
+
+                <div class="text">
+
+                <h2>1.1 · Planet Labs</h2>
+
+                <p>
+                Como insumo complementario para la distribución territorial precisa de las variables poblacionales, se emplearon imágenes satelitales de alta resolución espacial (3 metros) proporcionadas por Planet Labs, las cuales permitieron identificar con mayor detalle la ocupación real del suelo, la densidad de asentamientos humanos y los patrones de urbanización en cada unidad territorial analizada.
+
+                Las imágenes utilizadas corresponden a escenas tipo <strong>PSScene</strong>, adquiridas específicamente para la cobertura de la Ciudad de México, y seleccionadas bajo estrictos criterios de calidad atmosférica y radiométrica. En particular, presentan un <strong>0% de nubosidad</strong>, sin presencia de neblina ni sombras, con un porcentaje de cielo despejado del <strong>90%</strong> y un nivel de confianza de visibilidad del <strong>81%</strong>, lo que garantiza condiciones óptimas para el análisis espacial.
+
+                Las escenas cuentan con una clasificación de calidad <strong>standard</strong> y un estado de publicación <strong>finalized</strong>, lo cual asegura que los datos son consistentes y no están sujetos a cambios posteriores. La fecha de última actualización del producto corresponde al <strong>12 de junio de 2025</strong>.
+
+                Para la trazabilidad de la información empleada, la imagen utilizada en el presente estudio se encuentra registrada en el catálogo STAC de Planet Labs bajo el siguiente identificador único:
+
+                <br><br>
+                <strong>ID del producto:</strong> <code>5a4d8626-e03e-409e-bc35-22201ad2c2e8</code>
+
+                <br><br>
+                Dicho código permite localizar el producto directamente dentro del catálogo de Planet Labs y acceder a la escena exacta utilizada en este estudio, siempre que se cuente con una cuenta activa y permisos de acceso en la plataforma.
+
+                Para más información técnica, descarga o consulta del producto, visite:
+                <a href="https://www.planet.com/" target="_blank">https://www.planet.com/</a>
+                </p>
+
+
+                </div>
+
+            </section>
+
+            <section class="derecha">           
+
+                <div class="text">
+
+                <h2>02 · Procesamiento</h2>
+                
+                <p>
+                    Realizada la descarga de los datos del Censo 2020 a nivel de manzana urbana, se procedió con las siguientes actividades:
+                </p>
+
+                <ul class="custom-list">
+
+                        <li>
+
+                            <b>Integración de datos censales con geometría espacial: :</b>
+                            Se vincularon las variables demográficas del Censo 2020 (ITER y AGEB por manzana urbana) con los polígonos de 
+                            manzanas del Marco Geoestadístico Nacional mediante la clave única de manzana, generando una capa vectorial integrada con 
+                            información censal y geometría espacial.
+
+                        </li>
+
+                        <li>
+
+                            <b>Adecuación al ámbito territorial:</b> 
+                            Se separó la información correspondiente a las manzanas urbanas y a las localidades ITER. Las manzanas urbanas se procesaron en primera instancia, 
+                            ya que cuentan con geometría poligonal que permite trabajar directamente con su delimitación espacial. En contraste, las localidades ITER, 
+                            al carecer de geometría poligonal (definidas únicamente como puntos), se incorporaron posteriormente en el cálculo.
+
+                        </li>
+
+                        <li>
+
+                            <b>Procesamiento en Sistema de Información Geográfica (SIG):</b> 
+                            Con el uso de un SIG se realizaron las operaciones espaciales necesarias para la vinculación territorial y el 
+                            procesamiento posterior con las imágenes satelitales.
+
+                        </li>
+                    
+                    </ul>
+
+                </div>
+
+                <img src="imagenes/gis.jpg" alt="Planet Labs">
+
+            </section>
+
+            <section class="derecha">       
+                
+                <img src="imagenes/satelite.webp" alt="Planet Labs">
+
+                <div class="text">
+
+
+                    <h2>2.2 · Procesamiento de imágenes satelitales Planet Labs</h2>
+                    
+                    <p>
+                        Para optimizar la distribución espacial de las variables poblacionales censales, se implementó un proceso de clasificación supervisada utilizando imágenes satelitales de alta resolución espacial de Planet Labs.                
+                    </p>
+
+
+                </div>
+
+            </section>  
+            
+            <section class="derecha">
+
+                <div class="text">
+
+                    <h2>
+                        2.2.1 Características técnicas de la imagen satelital
+                    </h2>
+
+                    <p>
+                        Se adquirió un mosaico satelital correspondiente a la totalidad de la Ciudad de México con 
+                        fecha de captura del 2 de octubre de 2020 (2020/10/02), el cual presentaba las siguientes 
+                        especificaciones técnicas:
+                    </p>
+                
+                    <ul class="custom-list">
+
+                        <li>
+                            Resolución espacial: 3 metros por píxel
+                        </li>
+
+                        <li>
+                            Resolución radiométrica: 16 bits por banda espectral
+                        </li>
+
+                        <li>
+                            Composición espectral: 4 bandas espectrales (azul, verde, rojo e infrarrojo cercano)
+                        </li>
+
+                        <li>
+                            Estado de procesamiento: Nivel 3A (corregida radiométricamente y geométricamente)
+                        </li>
+
+                    </ul>
+
+                    <p>
+                        La imagen fue sometida a procesos estándar de percepción remota, incluyendo corrección atmosférica mediante el algoritmo 
+                        DOS (Dark Object Subtraction) para minimizar efectos de dispersión atmosférica, corrección geométrica por 
+                        orto-rectificación utilizando modelos digitales de elevación, y calibración radiométrica para convertir los números 
+                        digitales a valores de reflectancia superficial, garantizando la calidad radiométrica y geométrica necesaria para 
+                        análisis cuantitativos posteriores.
+                    </p>
+
+                </div>
+
+                <img src="imagenes/mexicoSatelite.jpg" alt="Planet Labs">
+
+            </section>  
+
+            <section class="derecha">
+
+                <div class="text">
+
+                    <h2>
+                        2.2.2 Procesamiento cartográfico de insumos vectoriales
+                    </h2>
+                
+                    <p>
+
+                        Se utilizaron como capas de referencia geográfica:
+                        
+                        <ul class="custom-list">
+
+                            <li>
+                                <strong>Capa de Unidades Territoriales:</strong> Polígonos correspondientes a las divisiones territoriales del Marco Geográfico de Participación Ciudadana de la Ciudad de México
+                            </li>
+
+                            <li>
+                                <strong>Capa de Manzanas INEGI:</strong> Polígonos de manzanas urbanas con información demográfica asociada del Censo de Población y Vivienda 2020
+                            </li>
+
+                        </ul>
+
+                    </p>               
+
+                </div>
+
+            </section>
+
+            <section class="top">
+
+                <h2>2.2.3 · CLASIFICACIÓN BINARIA MEDIANTE RANDOM FOREST</h2>
+
+                <div class="text">         
+                    
+
+                    <p class="fuera-lugar">
+                        Se implementó un algoritmo de clasificación binaria Random Forest utilizando únicamente los canales RGB de la imagen satelital para la detección automática de construcciones y áreas pobladas. El proceso incluyó:
+                    </p>
+
+                    <table class="tabla-morada">
+                        <thead>
+                            <tr>
+                                <th colspan="2">Configuración del modelo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><th>Características utilizadas</th><td>3 canales RGB (Rojo, Verde, Azul)</td></tr>
+                            <tr><th>Normalización RGB</th><td>Sí</td></tr>
+                            <tr><th>Número de estimadores</th><td>250</td></tr>
+                            <tr><th>Objetivo</th><td>Detectar construcciones/poblaciones</td></tr>
+                            
+                            <thead>
+                                <tr><th colspan="2">Métricas de desempeño del clasificador</th></tr>
+                            </thead>
+                            
+                            <tr><th colspan="2">Datos de entrenamiento</th></tr>
+                            <tr><td>Precisión Global</td><td>0.8606 (86.06%)</td></tr>
+                            <tr><td>Out-of-Bag Score</td><td>0.7697 (76.97%)</td></tr>
+                            
+                            <tr><th colspan="2">Datos de validación</th></tr>
+                            <tr><td>Precisión Global</td><td>0.7636 (76.36%)</td></tr>
+                            <tr><td>Coeficiente Kappa</td><td>0.5287</td></tr>
+                            <tr><td>Precisión (Precision)</td><td>0.8261 (82.61%)</td></tr>
+                            <tr><td>Sensibilidad/Recall</td><td>0.6786 (67.86%)</td></tr>
+                            <tr><td>Especificidad</td><td>0.6786 (67.86%)</td></tr>
+                            <tr><td>F1-Score</td><td>0.7451 (74.51%)</td></tr>
+                            <tr><td>AUC-ROC</td><td>0.9087 (90.87%)</td></tr>
+                            
+                            <tr><th colspan="2">Importancia de canales RGB</th></tr>
+                            <tr><td>Canal Rojo (R)</td><td>42.37%</td></tr>
+                            <tr><td>Canal Verde (G)</td><td>28.73%</td></tr>
+                            <tr><td>Canal Azul (B)</td><td>28.90%</td></tr>
+                        </tbody>
+                    </table>
+                    
+                    <table class="tabla-morada-matriz">
+                        <thead>
+                            <tr>
+                                <td>
+                                    <div class="celda-dividida">
+                                        <div class="parte-superior">Clase <br> Predicha</div>
+                                        <div class="parte-inferior">Clase Real</div>
+                                    </div>
+                                </td>
+                                <td>Sin Construcción</td>
+                                <td>Con Construcción</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Sin Construcción</td><td>19</td><td>9</td></tr>
+                            <tr><td>Con Construcción</td><td>4</td><td>23</td></tr>
+                        </tbody>
+                    </table>              
+
+                    <p class="fuera-lugar">
+                        El modelo binario demostró un desempeño robusto durante su desarrollo y validación. En la fase de <strong>entrenamiento</strong>, se alcanzó una <strong>precisión global</strong> del 86.06%, indicando que el modelo clasificó correctamente más de 8 de cada 10 píxeles durante su aprendizaje. El <strong>Out-of-Bag Score</strong> de 76.97%, calculado mediante validación cruzada interna del Random Forest con muestras no utilizadas en cada árbol de decisión, confirma la capacidad de generalización del modelo y reduce el riesgo de sobreajuste. En la fase de <strong>validación</strong> con datos independientes, la <strong>precisión global</strong> descendió a 76.36%, una disminución esperada que indica un desempeño consistente en datos no vistos previamente. La <strong>precisión (precision)</strong> del 82.61% indica que de cada 100 predicciones de "construcción", aproximadamente 83 son correctas, minimizando errores de falsos positivos. La <strong>sensibilidad (recall)</strong> del 67.86% revela que el modelo detecta correctamente 2 de cada 3 construcciones reales presentes en el territorio. La <strong>especificidad</strong> del 67.86% demuestra una capacidad equivalente para identificar correctamente áreas sin construcción. El <strong>F1-Score</strong> de 74.51% representa el balance armónico entre precisión y sensibilidad, indicando un desempeño equilibrado del clasificador. El <strong>coeficiente Kappa</strong> de 0.5287 confirma una concordancia moderada superior al azar entre las predicciones y la realidad observada. Finalmente, el <strong>AUC-ROC</strong> de 0.9087 (90.87%) indica una excelente capacidad discriminatoria del modelo, confirmando su habilidad para distinguir entre áreas construidas y no construidas en diversos umbrales de decisión. El <strong>canal rojo</strong> mostró ser el más relevante (42.37%) para la identificación de construcciones, seguido por los canales verde (28.73%) y azul (28.90%) con contribuciones menores pero significativas.
+                    </p>                 
+
+
+
+                </div>
+
+            </section>
+
+            <section class="derecha">
+
+                <div class="text">
+
+                    <h2>
+                        2.2.4 Procesamiento geométrico y análisis de sobreposición espacial
+                    </h2>
+
+                    <p>
+                        <strong>1. Filtrado geométrico con buffer de tolerancia</strong> <br>
+                        Se aplicó un buffer de 3 metros a los límites de las Unidades Territoriales con el objetivo de 
+                        identificar manzanas con sobreposición marginal. Aquellas cuya geometría quedó completamente 
+                        contenida dentro del buffer fueron separadas en una capa independiente y excluidas del análisis 
+                        posterior con imágenes satelitales, debido a su baja representatividad territorial.
+                    </p>           
+                                    
+
+                </div>
+
+                <img src="imagenes/cdmxView.jpg" alt="Planet Labs">
+
+            </section>
+
+            <section class="derecha">
+
+                <img src="imagenes/urbanEurope.png" alt="" srcset="">
+
+                <div class="text">
+
+                    <p>
+
+                        <strong> 2. Extracción y análisis de píxeles urbanos</strong> <br>
+                        A las manzanas que superaron el filtro geométrico se les aplicaron las siguientes operaciones:
+
+                        <ul class="custom-list">
+
+                            <li>
+                                Extracción zonal de estadísticas: Cálculo del número total de píxeles clasificados como Urbano (Clase 2) dentro de cada polígono.                         
+                            </li>
+
+                            <li>
+                                Cálculo de densidad urbana: Determinación del porcentaje de cobertura urbana respecto al área total de cada manzana.
+                            </li>
+
+                            <li>
+                                Generación de máscara de viabilidad: Creación de una capa binaria para identificar manzanas aptas para redistribución poblacional.
+                            </li>
+
+                        </ul>
+
+                    </p>
+
+                </div>
+
+            </section>
+
+            <section class="derecha">
+
+                
+                <div class="text">
+
+                    <p>
+                        <strong>3. Criterios de segmentación territorial</strong><br>
+                        Los umbrales de decisión se definieron a partir de:
+
+                        <ul class="custom-list">
+
+                            <li>
+                                Porcentaje de superficie urbana: Manzanas con baja cobertura urbana (< umbral establecido) conservaron su integridad territorial.
+                            </li>
+
+                            <li>
+                                Densidad de píxeles urbanos: Manzanas con alta densidad urbana (> umbral establecido) fueron segmentadas para redistribución proporcional de población.
+                            </li>
+
+                        </ul>
+
+                    </p>
+
+                </div>
+
+                <img src="imagenes/segmentation.webp" alt="" srcset="">
+
+            </section>
+
+            <section class="derecha">       
+                
+                <img src="imagenes/article.jfif" alt="Planet Labs">
+
+                <div class="text">
+
+
+                    <h2>2.2.5 · Redistribución proporcional de variables demográficas</h2>
+                    
+                    <p>
+
+                        Para las manzanas que cumplieron los criterios de segmentación, se aplicó un modelo de redistribución 
+                        poblacional basado en la densidad de cobertura urbana identificada mediante clasificación supervisada. 
+                        Los indicadores demográficos del Censo 2020 asociados a cada manzana fueron redistribuidos proporcionalmente 
+                        entre las sub-unidades resultantes, utilizando como factor de ponderación la densidad relativa de píxeles urbanos en cada segmento.
+
+                    </p>
+
+
+                </div>
+
+            </section>
+
+            <section class="derecha">       
+                
+                <div class="text">
+
+
+                    <h2>2.2.6 · Integración de variables demográficas de localidades ITER</h2>
+                    
+                    <!-- <p>
+
+                        Una vez completado el proceso de redistribución proporcional para las manzanas urbanas, se procedió con la integración de las variables demográficas correspondientes a las localidades ITER del Censo 2020.
+                        Asignación territorial de localidades ITER: Las variables demográficas de las localidades ITER, que carecen de geometría espacial definida y se presentan como datos puntuales, fueron asignadas inicialmente a la sección electoral correspondiente mediante análisis de proximidad geográfica y referencias territoriales oficiales.
+                        Distribución proporcional inter-seccional: Posteriormente, las variables de población de las localidades ITER asignadas a cada sección electoral fueron distribuidas proporcionalmente entre las Unidades Territoriales que abarcan dichas secciones, utilizando como factor de ponderación la superficie relativa y la densidad poblacional previamente calculada para cada Unidad Territorial.
+                        Este proceso permitió integrar la información demográfica de áreas no amanzanadas (localidades rurales, asentamientos dispersos, etc.) al sistema territorial de análisis, complementando la información ya procesada de manzanas urbanas.
+
+                    </p> -->
+                    <p>
+
+                        Una vez completado el proceso de redistribución proporcional para las manzanas urbanas, se procedió con la integración de las variables demográficas correspondientes a las localidades ITER del Censo 2020. Asignación territorial de localidades ITER: Las variables demográficas de las localidades ITER, que carecen de geometría espacial definida y se presentan como datos puntuales, fueron asignadas inicialmente a la sección electoral correspondiente mediante análisis de proximidad geográfica y referencias territoriales oficiales. Distribución proporcional inter-seccional: Posteriormente, las variables de población de las localidades ITER asignadas a cada sección electoral fueron distribuidas proporcionalmente entre las Unidades Territoriales que abarcan dichas secciones, utilizando como factor de ponderación la superficie relativa y la densidad poblacional previamente calculada para cada Unidad Territorial. Este proceso permitió integrar la información demográfica de áreas no amanzanadas (localidades rurales, asentamientos dispersos, etc.) al sistema territorial de análisis, complementando la información ya procesada de manzanas urbanas.
+                        Una vez consolidada la información, se calcularon los porcentajes y/o índices de los indicadores <strong>sociodemográficos</strong> por unidad territorial; los cuales se mapearon por cada una de las <strong>1,851 unidades territoriales,</strong> agregando el valor máximo y el mínimo del mismo indicador.
+                        Los porcentajes contenidos en el documento se truncan a dos decimales, por lo que su sumatoria podría no dar el <strong>100%</strong> debido al redondeo de cifras. Esto no implica un error.
+                        Los índices compuestos de disponibilidad se obtuvieron mediante la <strong>Técnica de reescalamiento,</strong> la cual transforma las variables al intervalo [0,1], empleando la distancia entre los valores máximos y mínimos.
+                    </p>
+                    <div class="integracion_blockquote">  
+                        <blockquote>
+                            Índice = (V1 × V2 × V3 × V4 × V5)<sup>1/5</sup><br>
+                            <small>Donde: V1…V5 = número de variables, <sup>1/5</sup> = raíz n-ésima</small>
+                        </blockquote>
+                    </div>
+                    <p>
+                        La <strong>media geométrica</strong> fue elegida porque penaliza el índice cuando sus componentes no avanzan de manera pareja.
+                    </p>
+                    
+
+
+                </div>
+
+            </section>
+
+            <!-- <section class="derecha">       
+                
+                <img src="imagenes/sqlGis.png" alt="Planet Labs">
+
+                <div class="text">
+
+
+                    <h2>2.2.7 · Consolidación de la base de información</h2>
+                    
+                    <p>
+
+                        El proceso culminó con la consolidación de una base de datos georreferenciada que integra:
+
+                        <ul class="custom-list">
+
+                            <li>
+                                Variables demográficas oficiales del Censo 2020
+                            </li>
+
+                            <li>
+                                Información de cobertura del suelo derivada de clasificación supervisada    
+                            </li>
+
+                            <li>
+                                Geometrías optimizadas de unidades territoriales
+                            </li>
+
+                            <li>
+                                Metadatos de calidad y precisión del procesamiento
+                            </li>
+
+                        </ul>
+                        
+                    </p>
+
+                    <p>
+                        Esta metodología permitió generar un sistema de información territorial con mayor resolución espacial y precisión en la distribución de 
+                        variables poblacionales, aprovechando las capacidades de la percepción remota para optimizar la representación cartográfica de datos sociodemográficos.
+                    </p>
+
+                </div>            
+
+            </section> -->
+
+            <section class="infografia">
+
+                <div class="contenedor-texto">
+
+                    <h2><i class="fa-solid fa-square-poll-vertical"></i> Resultados</h2>
+
+                    <p>
+                        El sistema se contextualiza dentro de la <strong>demografía estática,</strong> empleando como principal fuente el <strong>Censo 2020.</strong> Los resultados incluyen valores absolutos y relativos, como el indicador de Población de 3 años y más que habla alguna lengua indígena (absoluto) y su porcentaje. <br><br>
+                        Finalmente, los cuadros, gráficas y mapas fueron elaborados por la <strong>Dirección Ejecutiva de Organización Electoral y Geoestadística (DEOEyG),</strong> con base en el <strong>Censo 2020,</strong> el marco geográfico electoral digital y la lista nominal del INE.
+                    </p>
+                    <!-- <p>
+                        Habiendo consolidado la información, se calcularon los porcentajes y/o índices de los indicadores 
+                        <span class="resaltado">sociodemográficos</span> por unidad territorial; los cuales se mapearon por cada una de las 
+                        <span class="numero">1,851 unidades territoriales</span>, agregando el valor máximo y el mínimo del mismo indicador.
+                    </p>
+                    <p>
+                        Los porcentajes contenidos en el documento se truncan a dos decimales, por lo que su sumatoria podría no dar el 
+                        <span class="resaltado">100%</span> debido al redondeo de cifras. Esto no implica un error.
+                    </p>
+                    <p>
+                        Los índices compuestos de disponibilidad se obtuvieron mediante la 
+                        <span class="resaltado">Técnica de reescalamiento</span>, la cual transforma las variables al intervalo 
+                        <code>[0,1]</code>, empleando la distancia entre los valores máximos y mínimos.
+                    </p>
+                    <blockquote>
+                        Índice = (V1 × V2 × V3 × V4 × V5)<sup>1/5</sup><br>
+                        <small>Donde: V1…V5 = número de variables, <sup>1/5</sup> = raíz n-ésima</small>
+                    </blockquote>
+                    <p>
+                        La <span class="resaltado">media geométrica</span> fue elegida porque penaliza el índice cuando sus componentes no avanzan de manera pareja.
+                    </p>
+
+                    <p>
+
+                        El proceso culminó con la consolidación de una base de datos georreferenciada que integra:
+
+                        <ul class="custom-list">
+
+                            <li>
+                                Variables demográficas oficiales del Censo 2020
+                            </li>
+
+                            <li>
+                                Información de cobertura del suelo derivada de clasificación supervisada    
+                            </li>
+
+                            <li>
+                                Geometrías optimizadas de unidades territoriales
+                            </li>
+
+                            <li>
+                                Metadatos de calidad y precisión del procesamiento
+                            </li>
+
+                        </ul>
+                        
+                    </p>
+
+                    <p>
+                        Esta metodología permitió generar un sistema de información territorial con mayor resolución espacial y precisión en la distribución de 
+                        variables poblacionales, aprovechando las capacidades de la percepción remota para optimizar la representación cartográfica de datos sociodemográficos.
+                    </p>
+
+
+                    <p>
+                        El documento se contextualiza dentro de la <b>demografía estática</b>, empleando como principal fuente el 
+                        <span class="resaltado">Censo 2020</span>. Los resultados incluyen valores absolutos y relativos, como el indicador de 
+                        <i>Población de 3 años y más que habla alguna lengua indígena</i> (absoluto) y su porcentaje.
+                    </p>
+                    <p>
+                        Finalmente, los cuadros, gráficas y mapas fueron elaborados por la 
+                        <b>Dirección Ejecutiva de Organización Electoral y Geoestadística (DEOEyG)</b>, 
+                        con base en el <span class="resaltado">Censo 2020</span>, el marco geográfico electoral digital y la lista nominal del INE.
+                    </p> -->
+
+                </div>
+
+            </section>
+            
+        </div>
+
+    </div>
+
+        
+    <!-- TABLA DE INDICADORES -->
+    <div class="tabla-indicadores">
+
+      <h4>Temas e indicadores sociodemográficos para cada una de las Unidades Territoriales de las Características de las Unidades Territoriales que conforman la Ciudad de México</h4>
+
+      <table class="titulos-tabla">
+
+        <thead>
+            
+            <!-- TITULOS -->
+            <tr>
+                <th class="titulo-celda">temas</th>
+                <th class="titulo-celda">indicador</th>
+                <th class="titulo-celda">definición del indicador obtenido</th>
+                <th class="titulo-celda">planteamiento</th>
+            </tr>
+        </thead>
+
+        <!-- PRIMER TEMA -->
+        <tr>
+            <td class="titulo-celda" class="titulo-celda" rowspan="2">Distribución territorial</td>
+            <td>Superficie de la Unidad Territorial</td>
+            <td>Extensión territorial en kilómetros cuadrados</td>
+            <td>Superficie obtenida con Sistemas de Información Geográfica.</td>
+        </tr>
+
+        <tr>
+            <td>Superficie de la Unidad Territorial respecto a la Demarcacion</td>
+            <td>Porcentaje de superficie que representa la UT respecto a la entidad</td>
+            <td>Superficie de la UT/ superficie de la demaraciòn * 100</td>
+        </tr>
+
+        <!-- SEGUNDO TEMA -->
+        <tr>
+            <td class="titulo-celda" rowspan="11">Composición poblacional</td>
+            <td>Población Total</td>
+            <td>Personas que residen habitualmente en la UT</td>
+            <td>Sumatoria de la población de cada una de las secciones que conforman la UT</td>
+        </tr>
+
+        <tr>
+            <td>Porcentaje de Población de la Unidad Territorial respecto a la Demarcacion</td>
+            <td>Porcentaje de población que representa la UT, respecto a la Demarcación.</td>
+            <td>Población de la UT / Población de la Ciudad de México</td>
+        </tr>
+
+        <tr>
+            <td>Total de hombres</td>
+            <td>Número de hombres respecto a la población total de la UT.</td>
+            <td>Número de hombres / total de la población de la UT</td>
+        </tr>
+
+        <tr>
+            <td>Total de mujeres</td>
+            <td>Número de mujeres respecto a la población total de la UT.</td>
+            <td>Número de mujeres / total de la población de la UT.</td>
+        </tr>
+
+        <tr>
+            <td>Relación hombres-mujeres</td>
+            <td>Porcentaje de hombres por cada 100 mujeres</td>
+            <td>Número de hombres / número de mujeres*100</td>
+        </tr>
+
+        <tr>
+            <td>Relación de dependencia </td>
+            <td>Porcentaje de la población menor de 15 años y mayor de 64 años dependiente de la población de 15 a 64 años. También conocida como Razón de dependencia</td>
+            <td>Población menor de 15 años + población mayor de 64 años / población de 15 a 64 años*100</td>
+        </tr>
+
+        <tr>
+            <td>Índice de envejecimiento</td>
+            <td>Índice de personas adultas mayores de 65 años, por cada 100 personas menores de 15 años</td>
+            <td>Población de 65 años y más de edad / población de 0 a 14 años*100</td>                    
+        </tr>
+
+        <tr>
+            <td>Población de 0 a 17 años</td>
+            <td>Porcentaje de población de 0 a 17 años en el distrito.</td>
+            <td>Población de 0 a 17 años / total de la población del distrito*100</td>
+        </tr>
+
+        <tr>
+            <td>Población de 18 años y más</td>
+            <td>Porcentaje de población de 18 años y más en de la UT.</td>
+            <td>Población de 18 años y más / total de la población UT*100</td>
+        </tr>
+
+        <tr>
+            <td>Población que representa el distrito respecto a la Ciudad de México</td>
+            <td>Porcentaje de población que representa el Distrito, respecto a la entidad.</td>
+            <td>Población del Distrito / Población de la Ciudad de México</td>
+        </tr>
+
+        <tr>
+            <td>Densidad de la población</td>
+            <td>Número de habitantes por hectárea de un territorio determinado.</td>
+            <td>Total de la población / superficie</td>
+        </tr>
+
+        <!-- TERCER TEMA -->
+        <tr>
+            <td class="titulo-celda" rowspan="6">Vivienda</td>
+            <td>Total de viviendas particulares habitadas</td>
+            <td>Viviendas particulares habitadas de cualquier clase: casa única en el terreno; casa que comparte terreno con otra(s); casa dúplex; departamento en edificio; vivienda en vecindad o cuartería; vivienda en cuarto de azotea de un edificio; local no construido para habitación, vivienda móvil; refugio y no especificado de vivienda particular. Excluye a las viviendas particulares sin información de ocupantes.</td>
+            <td>Sumatoria de las viviendas particulares habitadas de cada una de las secciones que conforman la Unidad Territorial (UT).</td>
+        </tr>
+            
+        <tr>
+            <td>Ocupantes por vivienda</td>
+            <td>Promedio del número de ocupantes en las viviendas particulares habitadas. No se consideran viviendas habitadas de tipo local, vivienda móvil o refugio</td>
+            <td>Número total de ocupantes / total de viviendas particulares habitadas.</td>
+        </tr>
+
+        <tr>
+            <td>Viviendas que cuentan con piso de tierra</td>
+            <td>Porcentaje de viviendas particulares habitadas que cuentan con piso de tierra respecto al total de viviendas particulares habitadas</td>
+            <td>Número de viviendas con piso de tierra / total de viviendas particulares habitadas*100 </td>
+        </tr>
+
+        <tr>
+            <td>Disponibilidad de servicios y equipamiento</td>
+            <td>
+                Índice de viviendas particulares habitadas que disponen de servicio sanitario, 
+                cisterna o aljibe, agua entubada, energía eléctrica, drenaje y tinaco.
+                <br><em>*Estos indicadores se encuentran desagregados en el visor geográfico.</em>
+            </td>
+            <td>
+
+                <div class="div-imagen">
+                    <h3>• Reescalamiento</h3>
+                    <p>Índice = (V1 × V2 × V3 × V4 × V5 × V6)<sup>1/6</sup></p>
+                    <p>Donde: V1…V6 = número de variables, 1/6 = raíz n-ésima</p>
+                </div>
+
+                <div class="div-imagen">
+                    <!-- <h3>• Índice Compuesto</h3> -->
+                    <p>
+                        Ind = (viviendas particulares habitadas que disponen de servicio sanitario × 
+                        cisterna o aljibe × agua entubada × energía eléctrica × drenaje × tinaco)<sup>1/6</sup>
+                    </p>
+                </div>
+
+            </td>
+        </tr>
+
+
+        <tr>
+            <td>Disponibilidad de bienes</td>
+            <td>
+                Índice de viviendas particulares habitadas que disponen de refrigerador, lavadora, 
+                automóvil o camioneta, motocicleta o motoneta y / o bicicleta.
+                <br><em>*Estos indicadores se encuentran desagregados en el visor geográfico.</em>
+            </td>
+            <td>
+
+                <div class="div-imagen">
+                    <h3>• Reescalamiento</h3>
+                    <p>Índice = (V1 × V2 × V3 × V4 × V5)<sup>1/5</sup></p>
+                    <p>Donde: V1…V5 = número de variables, 1/5 = raíz n-ésima</p>
+                </div>
+
+                <div class="div-imagen">
+                    <!-- <h3>• Índice Compuesto</h3> -->
+                    <p>
+                        Ind = (viviendas particulares habitadas que disponen de refrigerador × lavadora × 
+                        automóvil o camioneta × motocicleta o motoneta × bicicleta)<sup>1/5</sup>
+                    </p>
+                </div>
+
+            </td>
+        </tr>
+
+
+        <tr>
+            <td>Disponibilidad de Tecnologías de la Información y la Comunicación (TIC´s)</td>
+            <td>
+                Índice de viviendas particulares habitadas que disponen de computadora, 
+                línea telefónica fija, teléfono celular, internet y / o televisión de paga.
+                <br><em>*Estos indicadores se encuentran desagregados en el visor geográfico.</em>
+            </td>
+            <td>
+
+                <div class="div-imagen">
+                    <h3>• Reescalamiento</h3>
+                    <p>Índice = (V1 × V2 × V3 × V4 × V5)<sup>1/5</sup></p>
+                    <p>Donde: V1…V5 = número de variables, 1/5 = raíz n-ésima</p>
+                </div>
+
+                <div class="div-imagen">
+                    <!-- <h3>• Índice Compuesto</h3> -->
+                    <p>
+                        Ind = (viviendas particulares habitadas que disponen de computadora × 
+                        línea telefónica fija × teléfono celular × internet × televisión de paga)<sup>1/5</sup>
+                    </p>
+                </div>
+
+            </td>
+        </tr>
+
+        
+        <!-- TERCER TEMA -->
+        <tr>
+            <td class="titulo-celda" rowspan="2">Etnicidad</td>
+            <td>Población de 3 años y más que habla alguna lengua indígena</td>
+            <td>Porcentaje de la población total del distrito de 3 años y más que declaró hablar alguna lengua indígena respecto al total de la población del mismo rango de edad expresada por cada cien. </td>
+            <td>Población de 3 años y más que habla alguna lengua indígena / Población de 3 años y más * 100.</td>
+        </tr>
+
+        <tr>
+            <td>Población que se considera afromexicana o afrodescendiente</td>
+            <td>Porcentaje de la población que por sus orígenes y de acuerdo con sus usos y costumbres se considera afromexicana, negra o afrodescendiente, respecto al total de la población expresada por cada cien. </td>
+            <td>Población que se considera afromexicana, negra o afrodescendiente / Población total x100</td>
+        </tr>
+
+        <!-- CUARTO TEMA -->
+        <tr>
+            <td class="titulo-celda" rowspan="8">Discapacidad</td>
+            <td>Población con algún tipo de discapacidad</td>
+            <td>Porcentaje de la población por distrito que declaró tener algún tipo de discapacidad respecto al total de la población, expresada por cada cien. </td>
+            <td>Población con discapacidad / Población total*100</td>
+            
+        </tr>
+
+        <tr>
+            <td>Población con discapacidad para caminar, subir o bajar</td>
+            <td>Porcentaje de la población que tiene mucha dificultad o no pueden caminar, subir o bajar.</td>
+            <td>Población con discapacidad para caminar, subir o bajar / Población total*100</td>
+        </tr>
+
+        <tr>
+            <td>Población con discapacidad para ver, aun usando lentes</td>
+            <td>Porcentaje de la población que tienen mucha dificultad o no pueden ver, aun cuando usen lentes.</td>
+            <td>Población con discapacidad para ver, aun usando lentes / Población total*100</td>
+        </tr>
+
+        <tr>
+            <td>Población con discapacidad para hablar o comunicarse</td>
+            <td>Porcentaje de la población que tienen mucha dificultad o no pueden hablar o comunicarse.</td>
+            <td>Población con discapacidad para hablar o comunicarse / Población total*100</td>
+        </tr>
+
+        <tr>
+            <td>Población con discapacidad para oír, aun usando aparato auditivo</td>
+            <td>Porcentaje de la población que tienen mucha dificultad o no pueden oír, aun usando aparato auditivo.</td>
+            <td>Población con discapacidad para oír, aun usando aparato auditivo / Población total*100</td>
+        </tr>
+
+        <tr>
+            <td>Población con discapacidad para vestirse, bañarse o comer</td>
+            <td>Porcentaje de la población que tienen mucha dificultad o no pueden bañarse, vestirse o comer.</td>
+            <td>Población con discapacidad para vestirse, bañarse o comer / Población total*100</td>
+        </tr>
+
+        <tr>
+            <td>Población con discapacidad para recordar o concentrarse</td>
+            <td>Porcentaje de la población que tienen mucha dificultad o no pueden recordar o concentrarse.</td>
+            <td>Población con discapacidad para recordar o concentrarse / Población total*100</td>
+        </tr>
+
+        <tr>
+            <td>Población con algún problema o condición mental</td>
+            <td>Porcentaje de la población con algún problema o condición mental</td>
+            <td>Población con algún problema o condición mental / Población total*100</td>
+        </tr>
+
+        <!-- QUINTO TEMA -->
+        <tr>
+            <td class="titulo-celda" rowspan="2">Migración</td>
+            <td>Población migrante estatal </td>
+            <td>Porcentaje de personas de 5 años y más de edad que cinco años antes del levantamiento censal, vivían en otra entidad.</td>
+            <td>Población de 5 años y más de edad migrante estatal / población de 5 años y más de edad*100</td>
+        </tr>
+
+        <tr>
+            <td>Población no nativa</td>
+            <td>Porcentaje de la población nacida en otra entidad.</td>
+            <td>Porcentaje de la población nacida en otra entidad.	Población nacida en otra entidad / Población total x100</td>
+        </tr>
+
+        <!-- SEXTO TEMA -->
+        <tr>
+            <td class="titulo-celda" rowspan="4">Características Económicas</td>
+            <td>Población de 12 años y más Económicamente Activa (PEA) </td>
+            <td>Porcentaje de la población económicamente activa (PEA), son todas las personas mayores de 12 años que realizaron algún tipo de actividad económica (población ocupada) o que buscaron activamente hacerlo en los 2 meses previos a la semana de referencia. También conocida como tasa de participación económica.</td>
+            <td>Población de 12 años y más económicamente activa / Total de la población de 12 años y más*100</td>
+        </tr>
+
+        <tr>
+            <td>Población de 12 años y más no económicamente activa (PNEA)</td>
+            <td>Porcentaje de la población no económicamente activa (PNEA) respecto al total de población de 12 años y más, expresada por cada cien. Todas las personas de 12 años y más que no realizaron actividades económicas en la semana de referencia ni buscaron hacerlo en los dos meses previos a esta.</td>
+            <td>Población de 12 años y más no económicamente activa / Total de la población de 12 años y más*100</td>
+        </tr>
+
+        <tr>
+            <td>Población de 12 años y más económicamente activa (PEA) ocupada</td>
+            <td>Porcentaje de la población económicamente activa (PEA) que se encontraba ocupada en la semana de referencia respecto al total de población económicamente activa, expresada por cada cien. Este indicador también se conoce como tasa de ocupación</td>
+            <td>Población de 12 años y más económicamente activa (PEA) ocupada / total de la población de 12 años y más económicamente activa*100</td>
+        </tr>
+
+        <tr>
+            <td>Población de 12 años y más económicamente activa (PEA) desocupada </td>
+            <td>Porcentaje de la población de 12 años y más que sin estar ocupadas buscaron incorporarse a alguna actividad económica en el mes previo a la semana del levantamiento de información, o entre uno y dos meses, aunque no haya buscado en el último mes por causas ligadas al mercado de trabajo, pero que estén dispuestas a incorporarse de inmediato.</td>
+            <td>Población de 12 años y más desocupada / Población de 12 años y más *100</td>
+        </tr>
+
+        <!-- SEPTIMO TEMA -->
+        <tr>
+            <td class="titulo-celda" rowspan="4">Educación</td>
+            <td>Población de 18 años y más con educación posbásica </td>
+            <td>Porcentaje de la población que tiene como máxima escolaridad algún grado aprobado en preparatoria o bachillerato; normal básica; estudios técnicos o comerciales con secundaria terminada; estudios técnicos o comerciales con preparatoria terminada; normal de licenciatura; licenciatura o profesional; especialidad; maestría o doctorado.</td>
+            <td>Población de 18 años y más con educación posbásica / Total de la población de 18 años y más*100</td>
+        </tr>
+
+        <tr>
+            <td>Población con rezago educativo</td>
+            <td>Es la población que teniendo 15 años o más no han alcanzado el nivel educativo que se considera básico en México., no tiene instrucción educativa, más la que tiene educación primaria incompleta, respecto de la población total del mismo grupo de edad.</td>
+            <td>Población de 15 años y más sin escolaridad + Población de 15 años y más con primaria incompleta / Población de 15 años y más * 100</td>
+        </tr>
+
+        <tr>
+            <td>Población de 15 años y más sin escolaridad</td>
+            <td>Personas de 15 a 130 años de edad que no aprobaron ningún grado escolar o que sólo tienen nivel preescolar.</td>
+            <td>Sumatoria de la población de 15 años y más sin escolaridad registrada en cada una de las secciones que conforman la Unidad Territorial (UT).</td>
+        </tr>
+
+        <tr>
+            <td>Población de 15 años y más con primaria incompleta</td>
+            <td>Personas de 15 a 130 años de edad que tienen como máxima escolaridad hasta el quinto grado aprobado en primaria. Incluye a las personas que no especificaron los grados aprobados en el nivel señalado.</td>
+            <td>Sumatoria de la población de 15 años y más con primaria incompleta en cada una de las secciones que conforman la Unidad Territorial (UT).</td>
+        </tr>
+
+        <!-- OCTAVO TEMA -->
+        <tr>
+            <td class="titulo-celda" rowspan="4">Hogares Censales</td>
+            <td>Total de hogares censales</td>
+            <td>Hogares en viviendas particulares habitadas. Se considera un hogar en cada vivienda particular. Incluye casa única en el terreno; casa que comparte terreno con otra(s); casa dúplex; departamento en edificio; vivienda en vecindad o cuartería; vivienda en cuarto de azotea de un edificio; local no construido para habitación; vivienda móvil; refugio y no especificado de vivienda particular.</td>
+            <td>Sumatoria de los hogares censales ubicados en cada una de las secciones que conforman la Unidad Territorial (UT).</td>
+        </tr>
+
+        <tr>
+            <td>Hogares censales con persona de referencia hombre</td>
+            <td>Hogares en viviendas particulares habitadas donde la persona de referencia es hombre. Se considera un hogar en cada vivienda particular.</td>
+            <td>Sumatoria de los hogares censales con persona de referencia hombre en cada una de las secciones que conforman la Unidad Territorial (UT).</td>
+        </tr>
+
+        <tr>
+            <td>Relación mujeres-hombres con jefatura en hogares censales</td>
+            <td>Porcentaje de jefas en hogares censales. Son los hogares censales en donde su jefatura es de sexo femenino.</td>
+            <td>Hogares censales con persona de referencia mujer / Hogares censales con persona de referencia hombre * 100</td>
+        </tr>
+
+        <tr>
+            <td>Hogares con jefatura de hogar mujer</td>
+            <td>Porcentaje de hogares con jefa mujer. Es la persona reconocida como tal por las y los integrantes del hogar. Representa la principal proveedora económica; propietaria de la vivienda; a quien se le reconoce como la autoridad moral o la persona de mayor edad.</td>
+            <td>Hogares censales con persona de referencia mujer / Total de hogares censales * 100</td>
+        </tr>
+
+        <!-- NOVENO TEMA -->
+        <tr>
+            <td class="titulo-celda" rowspan="2">Servicios de Salud</td>
+            <td>Población afiliada a servicios de salud </td>
+            <td>Porcentaje de la población afiliada a alguna institución que brinde servicios de salud pública o privada (IMSS, INSABI, ISSSTE, IMSS BIENESTAR, PEMEX, ETC.)</td>
+            <td>Población afiliada a servicios de salud / Total de la población*100</td>
+        </tr>
+
+        <tr>
+            <td>Población sin afiliación a servicios de salud</td>
+            <td>Porcentaje de la población sin afiliación a servicios de salud.</td>
+            <td>Población sin afiliación a servicios de salud / Total de la población*100</td>
+        </tr>
+
+        <!-- DECIMO TEMA -->
+        <tr>
+            <td class="titulo-celda" rowspan="2">Situación Conyugal</td>
+            <td>Población de 12 años y más soltera o nunca unida </td>
+            <td>Porcentaje de la población de 12 años y más soltera o nunca unida</td>
+            <td>Población de 12 años y más soltera o nunca unida / Total de la población de 12 años y más*100</td>
+        </tr>
+
+        <tr>
+            <td>Población de 12 años y más casada o unida</td>
+            <td>Porcentaje de la población de 12 años y más casada o unida</td>
+            <td>Población de 12 años y más casada o unida / Total de la población de 12 años y más*100</td>
+        </tr>
+
+    </table>
+    <br>
+    <p style="text-align: left;">*Se utiliza la superficie en hectáreas en lugar de kilómetros cuadrados para facilitar la interpretación de los resultados, evitando valores decimales.</p>
+      
+    </div>
+
+    
+
+</div>
+

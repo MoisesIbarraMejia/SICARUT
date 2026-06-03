@@ -1,0 +1,1811 @@
+/* Reseteo básico */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+
+/* Contenedor del mapa */
+
+#map-container {
+  display: flex;
+  height: 100vh;
+}
+
+#map {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  z-index: 0;
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  #map-container {
+      padding: 0 !important;
+  }
+  
+  #map {
+      height: 100vh !important;
+      width: 100% !important;
+  }
+  
+  /* Ajustar controles nativos de Google Maps */
+  .gm-control-active {
+      display: none !important;
+  }
+  
+  .gm-bundled-control {
+      margin: 5px !important;
+  }
+
+  /* Contenedor del dropdown */
+  .gm-style .gm-style-mtc {
+      position: absolute !important;
+      top: 40px !important;
+      right: 0px !important;
+      z-index: 1000 !important;
+
+      width: auto !important;
+      /* min-width: 110px !important; */
+
+      background: white !important;
+      border-radius: 8px !important;
+      box-shadow: rgba(0, 0, 0, 0.3) 0px 2px 6px !important;
+      padding: 0 !important;
+  }
+
+  /* Botón principal */
+  .gm-style .gm-style-mtc > button {
+      width: 80px !important;
+      height: 30px !important;
+      background: white !important;
+      border-radius: 8px !important;
+      font-size: 13px !important;
+
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+
+      border: none !important;
+      cursor: pointer !important;
+      padding: 11px 18px !important;;
+  }
+
+  /* Flecha */
+  .gm-style .gm-style-mtc > button::after {
+      /* content: '▼'; */
+      font-size: 10px;
+  }
+
+  /* Dropdown (Google controla display) */
+  .gm-style .gm-style-mtc ul {
+      position: absolute !important;
+      top: 40px !important;
+      right: 0 !important;
+      width: 80px !important;
+
+      background: white !important;
+      border-radius: 8px !important;
+      box-shadow: rgba(0, 0, 0, 0.3) 0px 2px 6px !important;
+
+      list-style: none !important;
+      padding: 4px 0 !important;
+      margin: 0 !important;
+  }
+
+  /* Items */
+  .gm-style .gm-style-mtc li {
+      padding: 10px 12px !important;
+      font-size: 13px !important;
+      cursor: pointer !important;
+  }
+
+  .gm-style .gm-style-mtc li:hover {
+      background-color: #f5f5f5 !important;
+  }
+
+
+    
+}
+
+/* Tambien quitamos del principal los botones de apmliar y herramentas de rotacion de google maps */
+.gm-control-active {
+    display: none !important;
+}
+
+/***************************************************************************************************************************
+                          *     BOTON PARA ELEGIR OTRA UT  *
+****************************************************************************************************************************/
+
+/* Asegurar que el título principal se muestre */
+#submenu-indicadores .titulo-submenu-indicadores {
+    display: block !important;
+    visibility: visible !important;
+    font-size: 20px !important;
+    font-weight: bold !important;
+    padding: 15px !important;
+    margin: 60px 15px 15px 15px !important;
+    color: #320547 !important;
+    background: #f8f9fa !important;
+    border-bottom: 3px solid #667eea !important;
+    text-align: center;
+}
+
+/* Información de UT seleccionada - Siempre al final */
+/* .info-ut-container {
+    margin-top: auto;
+    padding: 15px;
+    border-top: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    border-radius: 20px;
+}
+
+.info-ut-clave {
+    font-size: 13px;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 4px;
+}
+
+.info-ut-nombre {
+    font-size: 12px;
+    font-weight: 400;
+    color: #6c757d;
+    line-height: 1.3;
+    word-wrap: break-word;
+    max-height: 3.6em; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+} */
+
+/* Información de UT seleccionada - Siempre al final */
+.info-ut-container {
+    margin-top: auto;
+    padding: 18px 20px;
+    border-top: 2px solid #7b2ff7; /* Morado elegante */
+    background: linear-gradient(45deg, #faf8ff, #f4edff, #ffffff);
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    border-radius: 20px;
+    box-shadow: 0 0 12px rgba(123, 47, 247, 0.15);
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+}
+
+/* Efecto sutil al pasar el cursor (si aplica) */
+.info-ut-container:hover {
+    box-shadow: 0 0 18px rgba(123, 47, 247, 0.25);
+    transform: translateY(-1px);
+} 
+
+/* Clave o código de la UT */
+.info-ut-clave {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #4b0082;
+    margin-bottom: 6px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+/* Nombre o descripción */
+.info-ut-nombre {
+    font-size: 12.5px;
+    font-weight: 400;
+    color: #555;
+    line-height: 1.4;
+    word-wrap: break-word;
+    max-height: 3.6em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+}
+
+/* Contenedor de secciones */
+.info-ut-secciones {
+    margin-top: 8px;
+    font-size: 11.5px;
+    color: #777;
+    line-height: 1.4;
+}
+
+/* Texto individual */
+.info-ut-secciones div {
+    margin-top: 2px;
+    opacity: 0.9;
+}
+
+/* Etiqueta (Completas / Parciales) */
+.info-ut-secciones span {
+    font-weight: 600;
+    color: #6a5acd; /* morado suave */
+}
+
+
+
+/***************************************************************************************************************************
+                          *     BOTON PARA ELEGIR OTRA UT  *
+****************************************************************************************************************************/
+.boton-indicadores-especial {
+    position: relative;
+    overflow: hidden;
+}
+
+.boton-indicadores-especial::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.boton-indicadores-especial:hover::before {
+    left: 100%;
+}
+/**********************************************************/
+
+/* Botón para regresar al selector de Unidades Territoriales */
+.btn-regresar-selector {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 3001;
+    background: white;
+    border: 2px solid #520c8b;
+    color: #520c8b;
+    padding: 8px 15px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    white-space: nowrap;
+}
+
+.btn-regresar-selector:hover {
+    background: #520c8b;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(82, 12, 139, 0.3);
+}
+
+.btn-regresar-selector:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(82, 12, 139, 0.2);
+}
+
+/* Responsive para pantallas pequeñas */
+@media (max-width: 768px) {
+  .btn-regresar-selector {
+    top: 10px;
+    right: 10px;
+    font-size: 10px;
+    padding: 2px 6px;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 90px;
+  }
+}
+
+/***************************************************************************************************************************
+                          *     ESTILOS TABLA PROPIEDADES UTS   *
+****************************************************************************************************************************/
+/* CSS definitivo para la tabla externa */
+.tabla-ut-externa {
+    position: fixed;
+    top: 72vh;
+    left: -320px;
+    width: 300px;
+    height: 28vh;
+    background: #f8f9fa; /* Fondo visible */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    margin: 0;
+    transition: left 0.3s ease;
+    overflow-y: auto;
+    z-index: 1998;
+    border-radius: 0 12px 12px 0;
+    box-sizing: border-box;
+}
+
+.tabla-ut-externa.active {
+    left: 0;
+}
+
+/* Asegurar que el contenido sea visible */
+.tabla-ut-externa .informacion-ut-container {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: transparent;
+}
+
+.tabla-ut-externa h3 {
+    margin: 0 0 10px 0;
+    padding: 0;
+    font-size: 14px;
+    flex-shrink: 0;
+    color: #520c8b !important; /* Forzar color visible */
+}
+
+.tabla-ut-externa .tabla-container {
+    flex: 1;
+    margin: 0;
+    padding: 8px;
+    overflow-y: auto;
+    background: white !important; /* Fondo blanco para la tabla */
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/***************************************************************************************************************************
+                          *     MENUS DESPLEGABLES MAPAS DE CALOR E INDICES    *
+****************************************************************************************************************************/
+
+/* Botones flotantes */
+.hamburger {
+  cursor: pointer;
+  padding: 10px;
+  background: #320547;
+  color: white;
+  border-radius: 8px;
+  width: fit-content;
+  position: absolute;
+  top: 10px;
+  z-index: 2000; /* encima del mapa */
+}
+
+#btn-mapas {
+  left: 20px;
+}
+
+#btn-indicadores {
+  left: 20px;
+  top: 60px;
+}
+
+#titulo-temas,
+#titulo-indicadores-demarcacion,
+.titulo-submenu-calor,
+.titulo-submenu-indicadores {
+    visibility: hidden !important;
+}
+
+/* Sidebar general */
+.sidebar {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow-y: auto; /* permitir scroll */
+  position: fixed;
+  top: 0;
+  left: -320px;
+  width: 300px;
+  height: 100vh;
+  background: #f8f9fa;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+  padding: 40px 20px 0px 20px;
+  transition: left 0.3s ease;
+  overflow-y: auto;
+  z-index: 1999;
+  border-radius: 0 12px 12px 0;
+}
+
+.sidebar.active {
+  left: 0;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    left: -100vh;
+    border-radius: 0;
+  }
+
+  .sidebar.active {
+    left: 0;
+  }
+
+  #btn-indicadores {
+    left: 0px !important;
+    top: 60px;
+  }
+
+
+}
+
+.back-btn {
+  cursor: pointer;
+  margin-bottom: 15px;
+  color: #320547;
+  font-weight: bold;
+  display: inline-block; /* Para que la línea se ajuste al ancho del texto */
+  border-bottom: 1px solid rgba(50, 5, 71, 0.3); /* Línea fina y sutil */
+  padding-bottom: 3px; /* Espacio entre el texto y la línea */
+  transition: border-color 0.3s ease, color 0.3s ease; /* Animación */
+}
+
+/*************************************************************/
+/* Estilo MINIMALISTA */
+.submenu-item.seleccionado {
+    background: #f0f0ff !important;
+    border-left: 3px solid #8B5CF6 !important;
+    color: #4C1D95 !important;
+    font-weight: 500 !important;
+    transition: all 0.15s ease;
+}
+
+.submenu-item {
+    transition: all 0.15s ease;
+    border-left: 3px solid transparent;
+}
+
+.submenu-item.seleccionado:hover {
+    background: #e8e5ff !important;
+}
+
+/*************************************************************/
+.back-btn:hover {
+  color: #4a0a66; /* Un poco más claro/oscuro al pasar el mouse */
+  border-bottom-color: #320547; /* Línea más marcada al hover */
+}
+
+
+/* Estilo de los ítems del menú */
+.menu-item {
+  background: #e9ecef;
+  margin-bottom: 12px;   /* espacio entre botones */
+  padding: 12px 16px;    /* espacio interno del boton */
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+#menu-principal-calor, #submenu-calor, #menu-principal-indicadores{
+
+  margin-top: 25px;
+
+}
+
+#submenu-calor, #submenu-indicadores{
+
+  margin-top: 25px;
+
+}
+
+.menu-item:hover {
+  background: #d6d8db;
+}
+
+.menu-item, .submenu-item {
+  padding: 10px;
+  margin: 5px 0;
+  background: #e9ecef;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.menu-item:hover, .submenu-item:hover {
+  background: #d6d8db;
+}
+
+.menu-title {
+  font-weight: bold;
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.titulo-grafica{
+
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 15px;
+  font-weight: bolder;
+
+}
+
+.texto-superior-grafica{
+
+  margin-top: 15px;
+  margin-bottom: 25px;
+  text-align: justify;
+  
+}
+.texto-inferior-grafica{
+  
+  margin-top: 15px;
+  margin-bottom: 25px;
+  text-align: justify;
+
+}
+
+/* Estilos para el mapa de calor */
+/* Estilos para los controles de mapas */
+#controles-mapas {
+  font-family: 'Poppins', sans-serif;
+}
+
+#controles-mapas button {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+#controles-mapas button:hover {
+  transform: translateY(-2px);
+}
+
+#controles-mapas button:active {
+  transform: translateY(0);
+}
+
+#controles-mapas button i {
+  font-size: 14px;
+}
+
+#controles-mapas button span {
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* Animaciones para los botones */
+@keyframes pulseActive {
+  0% { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+  50% { box-shadow: 0 4px 16px rgba(50, 5, 71, 0.3); }
+  100% { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+}
+
+#controles-mapas button.activo {
+  animation: pulseActive 2s infinite;
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+    font-size: 13px;
+  }
+}
+
+.titulo-indicador-estadisticas{
+
+  text-transform: uppercase;
+
+}
+
+/*******************************************************************************
+                    *  Estilos extra menus y submenus*
+********************************************************************************/
+
+/* Cambiar en stylesVistas.css: */
+#menu-mapas-calor::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    z-index: -1;
+}
+#menu-indicadores::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    z-index: -1;
+}
+
+/* Items con estilos diferenciados */
+#menu-mapas-calor .menu-item {
+    background: rgba(255, 107, 107, 0.1);
+    border-left: 4px solid #ff6b6b;
+    transition: all 0.3s ease;
+}
+
+#menu-mapas-calor .menu-item:hover {
+    background: rgba(255, 107, 107, 0.2);
+    transform: translateX(5px);
+}
+
+#menu-indicadores .menu-item {
+    background: rgba(72, 52, 212, 0.1);
+    border-left: 4px solid #4834d4;
+    transition: all 0.3s ease;
+}
+
+#menu-indicadores .menu-item:hover {
+    background: rgba(72, 52, 212, 0.2);
+    transform: translateX(5px);
+}
+
+
+/******************************************************************************
+                    Estilos Distribución Territorial
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+/* AGREGAR ESTOS ESTILOS AL ARCHIVO stylesVistas.css */
+
+/* Estilos para perfil altimétrico */
+#altimetria-container {
+  font-family: 'Poppins', sans-serif;
+}
+
+#altimetria-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+#instrucciones-altimetria {
+  animation: fadeInOut 0.5s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilos para curvas de nivel */
+.curva-nivel {
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.curva-nivel:hover {
+  opacity: 1;
+}
+
+
+/* Estilos para botones de distribución territorial */
+.dt-controls {
+  position: absolute;
+  top: 170px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 1500;
+}
+
+.dt-button {
+  background: white;
+  border: 2px solid #8B4513;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  color: #8B4513;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.dt-button:hover {
+  background: #8B4513;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.dt-button.active {
+  background: #8B4513;
+  color: white;
+}
+
+/* Cursor especial para altimetría */
+.altimetria-cursor {
+  cursor: crosshair !important;
+}
+
+/* Marcadores de altimetría */
+.altimetria-marker {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+
+/*********************  ESTILOS LEYENDAS *********************/
+
+/* Estilos para leyendas de elevación */
+#leyenda-curvas, #leyenda-mapa-calor, #leyenda-elevacion {
+  animation: slideInLeft 0.5s ease-in-out;
+  backdrop-filter: blur(10px);
+}
+
+@keyframes slideInLeft {
+  from { 
+      opacity: 0; 
+      transform: translateX(-30px); 
+  }
+  to { 
+      opacity: 1; 
+      transform: translateX(0); 
+  }
+}
+
+/* Estilos específicos para leyenda de curvas */
+#leyenda-curvas {
+  transition: all 0.3s ease;
+}
+
+#leyenda-curvas:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3) !important;
+}
+
+/* Estilos específicos para leyenda de mapa de calor */
+#leyenda-mapa-calor {
+  transition: all 0.3s ease;
+}
+
+#leyenda-mapa-calor:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3) !important;
+}
+
+/* Efectos hover en elementos de leyenda */
+.leyenda-item {
+  transition: all 0.2s ease;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.leyenda-item:hover {
+  background-color: rgba(0,0,0,0.05);
+  transform: translateX(2px);
+}
+
+
+/* Estilos para gradiente visual */
+.gradiente-elevacion {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.gradiente-elevacion:hover {
+  transform: scale(1.02);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* Estilos para curvas de nivel con diferentes pesos */
+.curva-muy-baja {
+  filter: drop-shadow(0 0 2px rgba(46, 125, 50, 0.6));
+}
+
+.curva-baja {
+  filter: drop-shadow(0 0 2px rgba(104, 159, 56, 0.6));
+}
+
+.curva-media {
+  filter: drop-shadow(0 0 3px rgba(251, 192, 45, 0.6));
+}
+
+.curva-alta {
+  filter: drop-shadow(0 0 3px rgba(255, 143, 0, 0.7));
+}
+
+.curva-muy-alta {
+  filter: drop-shadow(0 0 4px rgba(93, 64, 55, 0.8));
+}
+
+/* Efecto de pulsación para elementos activos */
+.elevacion-activa {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+      box-shadow: 0 0 0 0 rgba(255, 143, 0, 0.7);
+  }
+  70% {
+      box-shadow: 0 0 0 10px rgba(255, 143, 0, 0);
+  }
+  100% {
+      box-shadow: 0 0 0 0 rgba(255, 143, 0, 0);
+  }
+}
+
+/* Estilos para modo terrain */
+.terrain-mode .gm-style {
+  transition: all 0.5s ease;
+}
+
+/* Mejoras visuales para botones de cerrar en leyendas */
+.leyenda-close-btn {
+  position: absolute;
+  top: 5px;
+  right: 8px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #999;
+  transition: all 0.2s ease;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.leyenda-close-btn:hover {
+  color: #ff0000;
+  background-color: rgba(255, 0, 0, 0.1);
+  transform: scale(1.1);
+}
+
+
+
+/*******************************************************************************
+                    *  ESTILOS ASIDE MAPAS INDIADORES  *
+
+********************************************************************************/
+
+/* Contenedor del mapa de Google Maps */
+#mapaGoogleDemarcacion {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+/* Asegurar que el mapa se vea correctamente */
+.area-mapa #mapaGoogleDemarcacion {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Estilos para InfoWindow personalizado */
+.gm-style .gm-style-iw-c {
+    padding: 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.gm-style .gm-style-iw-t {
+    display: none;
+}
+
+/* Contenedor del mapa debe tener altura definida */
+.contenedor-mapa {
+    flex: 0 0 60% !important;
+    width: 60% !important;
+    height: 100% !important;
+    min-height: 100% !important;
+    max-height: 100% !important;
+}
+
+.area-mapa {
+    height: calc(100% - 40px) !important;
+    width: 100% !important;
+}
+
+/* Controles de Google Maps personalizados */
+.gm-style .gm-style-cc {
+    display: none;
+}
+
+.gm-style .gm-bundled-control {
+    margin: 10px;
+}
+
+/* Responsive para Google Maps */
+@media (max-width: 768px) {
+    .area-mapa {
+        min-height: 250px;
+    }
+    
+    #mapaGoogleDemarcacion {
+        border-radius: 6px;
+    }
+}
+
+/* Loader para mientras carga el mapa */
+.mapa-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background: #f8f9fa;
+    color: #320547;
+    font-family: 'Poppins', sans-serif;
+}
+
+.mapa-loading::after {
+    content: "Cargando mapa...";
+    font-size: 14px;
+}
+
+
+/* Estilos para el aside tradicional (cuando NO tiene clase ampliado) */
+#asideMap:not(.ampliado) {
+    position: fixed;
+    top: 0;
+    right: -40%;
+    width: 40%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
+    padding: 25px 20px;
+    transition: right 0.3s ease;
+    overflow-y: auto;
+    z-index: 1999;
+    border-radius: 12px 0 0 12px;
+    display: none;
+}
+
+/* Cuando el aside tradicional está visible */
+#asideMap:not(.ampliado).active,
+#asideMap:not(.ampliado)[style*="block"] {
+    right: 0;
+    display: block !important;
+}
+
+/* Estilos específicos para el contenido del aside tradicional */
+#asideMap:not(.ampliado) .texto-superior-grafica,
+#asideMap:not(.ampliado) .texto-inferior-grafica {
+    margin: 15px 0;
+    text-align: justify;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+}
+
+#asideMap:not(.ampliado) .titulo-grafica {
+    text-align: center;
+    margin: 15px 0;
+    font-weight: bold;
+    font-size: 18px;
+    color: #320547;
+}
+
+#asideMap:not(.ampliado) .graficas {
+    margin: 20px 0;
+    height: 400px;
+}
+
+#asideMap:not(.ampliado) #myBarChart {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Responsive para aside tradicional */
+@media (max-width: 768px) {
+    #asideMap:not(.ampliado) {
+        width: 100%;
+        right: -100%;
+        height: 50%;
+        top: auto;
+        bottom: -50%;
+        transition: bottom 0.3s ease;
+    }
+    
+    #asideMap:not(.ampliado).active,
+    #asideMap:not(.ampliado)[style*="block"] {
+        bottom: 0;
+        right: auto;
+    }
+}
+
+
+/* Botón cerrar para aside tradicional */
+#asideMap:not(.ampliado)::before {
+    content: "× Cerrar";
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: #dc3545;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    z-index: 2000;
+}
+
+
+
+/* Forzar visibilidad del aside ampliado */
+#asideMap.ampliado {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 99999 !important;
+    background: white !important;
+    display: flex !important;
+    flex-direction: column !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+}
+
+/* Asegurar que el contenido sea visible */
+#asideMap.ampliado * {
+    visibility: visible !important;
+}
+
+/* Header debe ser visible */
+.header-ampliado {
+    background: #320547 !important;
+    color: white !important;
+    padding: 15px 20px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
+    flex-shrink: 0 !important;
+    z-index: 100000 !important;
+}
+
+/* Contenedor principal debe ser visible */
+.contenedor-principal {
+    flex: 1 !important;
+    display: flex !important;
+    height: calc(100vh - 70px) !important;
+    overflow: hidden !important;
+    background: #f0f0f0 !important;
+}
+
+
+/* Área de contenido debe ser visible */
+.area-contenido {
+    display: flex !important;
+    flex-direction: row !important;
+    height: 100% !important;
+    width: 100% !important;
+}
+
+
+/* Contenedor de mapa debe ser visible */
+
+/* Canvas debe ser visible */
+#graficaLineasDemarcacion {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+/* Botón cerrar debe ser visible */
+.btn-cerrar-ampliado {
+    background: #dc3545 !important;
+    color: white !important;
+    border: none !important;
+    padding: 10px 20px !important;
+    border-radius: 6px !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    z-index: 100001 !important;
+}
+
+/* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+
+/* ESTILOS MEJORADOS PARA EL ASIDE DE INDICADORES */
+
+/* Mejoras para las estadísticas generales */
+.stat-item-mejorado:hover {
+    cursor: pointer;
+}
+
+.estadisticas-leyenda {
+    margin-bottom: 25px;
+}
+
+.estadisticas-leyenda h4 {
+    color: #320547;
+    font-size: 16px;
+    margin-bottom: 15px;
+    font-weight: 700;
+    text-align: center;
+    padding: 8px;
+    background: linear-gradient(135deg, #320547, #4a1660);
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+#estadisticas-container {
+    max-height: 350px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+/* Scrollbar personalizado para estadísticas */
+#estadisticas-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+#estadisticas-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+#estadisticas-container::-webkit-scrollbar-thumb {
+    background: #320547;
+    border-radius: 3px;
+}
+
+#estadisticas-container::-webkit-scrollbar-thumb:hover {
+    background: #4a1660;
+}
+
+/* Mejoras para la leyenda de colores */
+.leyenda-colores {
+    margin-top: 20px;
+}
+
+.leyenda-colores h4 {
+    color: #320547;
+    font-size: 16px;
+    margin-bottom: 15px;
+    font-weight: 700;
+    text-align: center;
+    padding: 8px;
+    background: linear-gradient(135deg, #ff6b35, #f7931e);
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+#leyenda-colores-container {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+/* Scrollbar personalizado para leyenda */
+#leyenda-colores-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+#leyenda-colores-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+#leyenda-colores-container::-webkit-scrollbar-thumb {
+    background: #ff6b35;
+    border-radius: 3px;
+}
+
+#leyenda-colores-container::-webkit-scrollbar-thumb:hover {
+    background: #f7931e;
+}
+
+.item-leyenda-mejorada:hover {
+    cursor: pointer;
+}
+
+/* Mejoras para la leyenda lateral */
+.leyenda-lateral {
+    width: 280px !important; /* Aumentado de 250px */
+    background: #f8f9fa !important;
+    border-right: 3px solid #320547 !important;
+    padding: 20px !important;
+    overflow-y: auto !important;
+    flex-shrink: 0 !important;
+    display: block !important;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+}
+
+.leyenda-lateral h2{
+
+  padding-left: 20%;
+  padding-bottom: 10px;
+  text-align: left;
+  font-size: medium;
+  
+
+}
+
+.leyenda-titulo {
+    color: #320547;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 12px;
+    background: linear-gradient(135deg, #320547, #4a1660);
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Mejoras para el contenedor de gráfica */
+/* Contenedor único de gráfica */
+.contenedor-grafica {
+    flex: 0 0 40% !important;
+    width: 40% !important;
+    height: 100% !important;
+    min-height: 100% !important;
+    max-height: 100% !important;
+}
+
+.titulo-grafica {
+    color: #320547;
+    font-size: 16px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 15px;
+    padding: 8px;
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    border-radius: 6px;
+    border: 1px solid #90caf9;
+}
+
+
+/************************************************************************
+                    *  Tootltip google maps  *
+*************************************************************************/
+
+@keyframes fadeInTooltip {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#tooltip-personalizado {
+    animation: fadeInTooltip 0.3s ease-out;
+}
+
+/************************************* Curvas ********************************/
+/* ANIMACIONES PARA TOOLTIP DE CURVAS DE NIVEL */
+
+@keyframes fadeInTooltip {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes fadeOutTooltip {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-5px) scale(0.98);
+    }
+}
+
+/* Estilos para el tooltip personalizado de curvas */
+#tooltip-personalizado {
+    animation: fadeInTooltip 0.3s ease-out;
+    transition: left 0.1s ease, top 0.1s ease;
+}
+
+/* Clase adicional para tooltips de curvas de nivel */
+.tooltip-curva-nivel {
+    animation: fadeInTooltip 0.3s ease-out;
+    transition: left 0.1s ease, top 0.1s ease;
+}
+
+/* Efectos adicionales para mejor visibilidad del tooltip */
+#tooltip-personalizado::before {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid rgba(255, 255, 255, 0.96);
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+#tooltip-personalizado::after {
+    content: '';
+    position: absolute;
+    bottom: -7px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 7px solid var(--tooltip-border-color, #2E7D32);
+}
+
+/* Hover suave en las curvas de nivel */
+.curva-hover {
+    transition: all 0.2s ease;
+}
+
+/* Efectos de neón para las curvas (si quieres agregar efectos CSS adicionales) */
+.curva-neon-muy-alto {
+    filter: drop-shadow(0 0 3px #5D4037) drop-shadow(0 0 6px #5D4037);
+}
+
+.curva-neon-alto {
+    filter: drop-shadow(0 0 3px #FF8F00) drop-shadow(0 0 6px #FF8F00);
+}
+
+.curva-neon-medio {
+    filter: drop-shadow(0 0 3px #FBC02D) drop-shadow(0 0 6px #FBC02D);
+}
+
+.curva-neon-bajo {
+    filter: drop-shadow(0 0 3px #689F38) drop-shadow(0 0 6px #689F38);
+}
+
+.curva-neon-muy-bajo {
+    filter: drop-shadow(0 0 3px #2E7D32) drop-shadow(0 0 6px #2E7D32);
+}
+
+/* Responsive para tooltips en pantallas pequeñas */
+@media (max-width: 768px) {
+    #tooltip-personalizado {
+        font-size: 11px !important;
+        padding: 8px 10px !important;
+        max-width: 160px !important;
+    }
+    
+    #tooltip-personalizado::before {
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-top: 8px solid rgba(255, 255, 255, 0.96);
+    }
+    
+    #tooltip-personalizado::after {
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid var(--tooltip-border-color, #2E7D32);
+    }
+}
+
+@media (max-width: 480px) {
+    #tooltip-personalizado {
+        font-size: 10px !important;
+        padding: 6px 8px !important;
+        max-width: 140px !important;
+    }
+}
+
+/* Animaciones adicionales para el efecto neón de las curvas */
+@keyframes glow {
+    0%, 100% {
+        filter: drop-shadow(0 0 2px currentColor);
+    }
+    50% {
+        filter: drop-shadow(0 0 8px currentColor) drop-shadow(0 0 12px currentColor);
+    }
+}
+
+/* Aplicar glow sutil a las curvas en hover (opcional) */
+.curva-glow {
+    animation: glow 2s ease-in-out infinite;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid var(--tooltip-border-color, #2E7D32);
+}
+
+/* Responsive para tooltips en pantallas pequeñas */
+@media (max-width: 768px) {
+    #tooltip-personalizado {
+        font-size: 11px !important;
+        padding: 8px 10px !important;
+        max-width: 160px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #tooltip-personalizado {
+        font-size: 10px !important;
+        padding: 6px 8px !important;
+        max-width: 140px !important;
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+
+/***Tooltip demarcaciones***/
+
+.tooltip-poligono {
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    line-height: 1.4;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/**********************************************************
+ESTILOS DEL BOTON DE DESCARGA DE DATOS
+***********************************************************/
+/* Estilo del botón en el mapa */
+.custom-map-button {
+  
+  background-color: #320255;
+  border: 2px solid #000000;
+  border-radius: 5px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  cursor: pointer;
+  margin: 10px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #ffffff;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.custom-map-button:hover {
+  background-color: #985cd0;
+}
+
+/************************************************************
+
+                       Estilos Lyendas
+                      
+*************************************************************/
+/* Tamaño normal (escritorio) */
+.titulo-superficie {
+    color: #2E7D32;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.info-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+
+@media (max-width: 768px) {
+
+  /*************          LEYENDA TEMATICA         ***********/
+  #leyenda-tematica {
+    left: 0px !important;
+    padding: 5px !important; 
+    bottom: 10px !important;
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
+    max-width: 130px !important;
+  }
+
+  #leyenda-texto {
+    font-size: 10px !important;
+  }
+
+  #leyenda-titulo {
+    font-size: 11px !important;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    display: block;
+  }
+
+  /** Estadisticas generales **/
+  #estadisticas-descriptivas {
+    padding: 6px !important;
+    font-size: 10px !important;
+    right: 0px !important;
+    bottom: 50px !important;
+  }
+
+  #titulo-estadisticas {
+    font-size: 11px !important;
+    margin-bottom: 0px !important;
+  }
+  
+  /***     DESCARGA KML         ****/
+  #DescargarKML {
+    padding: 6px !important;
+    font-size: 9px !important;
+  }
+
+  #divBtnKML {
+    right: 50px !important;
+  }
+
+  /********** MENSAJE iNSTRUCTIVO **********/
+  #mensaje-instructivo {
+    font-size: 8px !important;
+    padding: 8px !important;
+    max-width: 100px !important;
+  }
+}
+
+
+/* ===============================
+   RESPONSIVE PARA PANTALLAS PEQUEÑAS
+   =============================== */
+@media (max-width: 768px) {
+
+    /* Posición del contenedor */
+    #controles-mapas {
+        top: 90px !important;
+        left: 10px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 6px !important;
+        width: auto !important;
+        z-index: 2000 !important;
+    }
+
+    /* Ajustes generales para todos los botones */
+    #btn-mapa-calor,
+    #btn-mapa-tematico,
+    #btn-limpiar-mapas {
+        padding: 6px !important;
+        font-size: 11px !important;
+        min-width: unset !important;
+        width: 100% !important;
+        border-radius: 6px !important;
+        gap: 6px !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
+    }
+
+    /* Iconos más pequeños */
+    #btn-mapa-calor i,
+    #btn-mapa-tematico i,
+    #btn-limpiar-mapas i {
+        font-size: 11px !important;
+    }
+
+    /* Texto del span más pequeño */
+    #btn-mapa-calor span,
+    #btn-mapa-tematico span,
+    #btn-limpiar-mapas span {
+        font-size: 10px !important;
+    }
+}
+
+
+/* Responsive para leyendas */
+@media (max-width: 768px) {
+  #leyenda-curvas, #leyenda-mapa-calor {
+      left: 10px !important;
+      max-width: 160px !important;
+      font-size: 10px !important;
+      padding: 8px !important;
+  }
+
+  #leyenda-calor-titulo{
+    font-size: 12px !important;
+  }
+
+  #leyenda-calor-nivel {
+    font-size: 11px !important;
+  }
+
+  #leyenda-calor-rango {
+    font-size: 10px !important;
+  }
+
+  #info-superficie-ut {
+    left: 10px !important;
+    bottom: 230px !important;
+    padding: 2px !important;
+  }
+
+  .info-header {
+    margin-bottom: 4px;
+    padding-bottom: 4px;
+    border-bottom-width: 0.5px;
+    flex-direction: column; /* si quieres apilarlos */
+    text-align: center;
+  }
+
+  .info-header span {
+    margin-right: 0; /* elimina el espacio lateral */
+  }
+
+  .titulo-superficie {
+    font-size: 12px !important;
+  }
+  
+  #leyenda-curvas {
+      bottom: 10px !important;
+  }
+  
+  #leyenda-mapa-calor {
+      bottom: 10px !important;
+  }
+  
+  #titulo-leyenda-curvas {
+    font-size: 11px !important;
+  }
+
+  #texto-leyenda-curvas {
+    font-size: 10px !important;
+  }
+}
+
+/* ==========================================
+   RESPONSIVE PARA LA GRÁFICA EN PANTALLAS PEQUEÑAS
+   ========================================== */
+@media (max-width: 768px) {
+
+    #contenedor-grafica-lineas {
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+
+        width: 100% !important;
+        height: 45vh !important;
+
+        max-width: 100% !important;
+        max-height: 50vh !important;
+
+        min-width: unset !important;
+        min-height: unset !important;
+
+        border-radius: 10px !important;
+        padding: 8px !important;
+
+        box-shadow: 0 -2px 18px rgba(0, 0, 0, 0.25) !important;
+
+        backdrop-filter: blur(4px);
+
+        z-index: 9999 !important;
+    }
+
+    /* Ajustes internos */
+    #contenedor-grafica-lineas h4 {
+        font-size: 12px !important;
+    }
+
+    #contenedor-grafica-lineas button {
+        width: 20px !important;
+        height: 20px !important;
+        font-size: 10px !important;
+    }
+
+    #contenedor-grafica-lineas canvas {
+        height: calc(100% - 30px) !important;
+    }
+}
+
+
+/***************************************************
+               Estilos Grafica Altimetria
+***************************************************/
+@media (max-width: 768px) {
+  #altimetria-container {
+    width: 100% !important;
+    height: 45vh !important;
+    max-width: 100% !important;
+    max-height: 50vh !important;
+    right: 0px !important;
+    bottom: 0px !important;
+    padding: 5px !important;
+    border: 2px solid rgb(255, 0, 0) !important;
+  }
+
+  #altimetria-header{
+    margin-bottom: 5px !important;
+    padding-bottom: 5px !important;
+  }
+
+  .altimetria-box {
+    bottom: 10px;
+    right: 10px;
+    width: 90vw;
+    height: 55vh;
+    padding: 12px;
+    border-width: 2px;
+  }
+
+  .altimetria-header {
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+  }
+
+  .altimetria-title {
+    font-size: 12px;
+  }
+
+  .btn-altimetria-nuevo,
+  .btn-altimetria-cerrar {
+    font-size: 10px;
+    padding: 6px 8px;
+  }
+}
+
+
+/***************************************************
+               Estilos Vista Ampliada INICADORES
+***************************************************/
+
+
+#aviso-orientacion {
+    position: fixed;
+    z-index: 99999;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+
+/* .mensaje-orientacion {
+    color: white;
+    font-size: 20px;
+    max-width: 320px;
+    font-weight: bold;
+}
+
+.area-contenido {
+    display: flex;
+    flex-direction: row;
+}
+
+.contenedor-mapa {
+    flex: 0 0 60%;
+}
+
+.contenedor-grafica {
+    flex: 0 0 38%;
+} */
+
+/* Quitar el recuadro blanco que aparece al cambiar a Satélite */
+.gmnoprint div[style*="background-color: rgb(255, 255, 255)"] {
+    display: none !important;
+}
