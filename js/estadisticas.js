@@ -7161,10 +7161,12 @@ function mapaCalor(datos) {
     ];
 
     if (heatmap) heatmap.setMap(null);
-    heatmap = new google.maps.visualization.HeatmapLayer({
+    const SimpleHeatmap = obtenerClaseSimpleHeatmap(); // <-- se construye aquí, con google ya cargado
+    heatmap = new SimpleHeatmap({
         data: heatData,
         radius: 50,
-        gradient: gradientes
+        gradient: gradientes,
+        opacity: 0.75
     });
     heatmap.setMap(staticMap);
 
@@ -8147,6 +8149,157 @@ function seleccionarSubtema(idBoton, categoria, subtema) {
     if (controlesMapas) {
         controlesMapas.style.display = 'flex';
     }
+}
+
+/*********************************************************************************
+ *   * REEMPLAZO DE google.maps.visualization.HeatmapLayer (deprecado v3.65) *
+ *   * Heatmap propio con OverlayView + Canvas — construcción perezosa *
+**********************************************************************************/
+let SimpleHeatmapClass = null;
+
+function obtenerClaseSimpleHeatmap() {
+    // Se crea solo la primera vez que se necesita, cuando 'google' ya existe
+    if (SimpleHeatmapClass) return SimpleHeatmapClass;
+
+    SimpleHeatmapClass = class SimpleHeatmap extends google.maps.OverlayView {
+        constructor(options = {}) {
+            super();
+            this.data_ = options.data || [];
+            this.radius_ = options.radius || 40;
+            this.opacity_ = options.opacity ?? 0.7;
+            this.gradient_ = options.gradient || [
+                "rgba(0, 0, 255, 0)",
+                "rgba(0, 0, 255, 1)",
+                "rgba(0, 255, 255, 1)",
+                "rgba(0, 255, 0, 1)",
+                "rgba(255, 255, 0, 1)",
+                "rgba(255, 165, 0, 1)",
+                "rgba(255, 0, 0, 1)"
+            ];
+            this.canvas_ = null;
+            this.gradientCanvas_ = this.crearLUTGradiente_();
+            this.maxWeight_ = Math.max(1, ...this.data_.map(d => d.weight || 1));
+        }
+
+        crearLUTGradiente_() {
+            const c = document.createElement('canvas');
+            c.width = 1;
+            c.height = 256;
+            const ctx = c.getContext('2d');
+            const grad = ctx.createLinearGradient(0, 0, 0, 256);
+            this.gradient_.forEach((color, i) => {
+                grad.addColorStop(i / (this.gradient_.length - 1), color);
+            });
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 1, 256);
+            return ctx.getImageData(0, 0, 1, 256).data;
+        }
+
+        onAdd() {
+            this.canvas_ = document.createElement('canvas');
+            this.canvas_.style.position = 'absolute';
+            this.canvas_.style.pointerEvents = 'none';
+            const panes = this.getPanes();
+            panes.overlayLayer.appendChild(this.canvas_);
+        }
+
+        onRemove() {
+            if (this.canvas_ && this.canvas_.parentNode) {
+                this.canvas_.parentNode.removeChild(this.canvas_);
+            }
+            this.canvas_ = null;
+        }
+
+        draw() {
+            if (!this.canvas_) return;
+
+            const projection = this.getProjection();
+            if (!projection) return;
+
+            const map = this.getMap();
+            const bounds = map.getBounds();
+            if (!bounds) return;
+
+            // 1. Obtener las esquinas del área visible en "div pixels" reales
+            const ne = bounds.getNorthEast();
+            const sw = bounds.getSouthWest();
+
+            const topRight = projection.fromLatLngToDivPixel(ne);
+            const bottomLeft = projection.fromLatLngToDivPixel(sw);
+
+            if (!topRight || !bottomLeft) return;
+
+            // El origen real del canvas (esquina superior-izquierda visible)
+            const left = bottomLeft.x;
+            const top = topRight.y;
+            const width = topRight.x - bottomLeft.x;
+            const height = bottomLeft.y - topRight.y;
+
+            if (width <= 0 || height <= 0) return;
+
+            // 2. Posicionar y dimensionar el canvas usando ESE origen, no (0,0)
+            this.canvas_.width = width;
+            this.canvas_.height = height;
+            this.canvas_.style.width = width + 'px';
+            this.canvas_.style.height = height + 'px';
+            this.canvas_.style.left = left + 'px';
+            this.canvas_.style.top = top + 'px';
+
+            const ctx = this.canvas_.getContext('2d');
+            ctx.clearRect(0, 0, width, height);
+
+            const buffer = document.createElement('canvas');
+            buffer.width = width;
+            buffer.height = height;
+            const bctx = buffer.getContext('2d');
+
+            this.data_.forEach(({ location, weight }) => {
+                const point = projection.fromLatLngToDivPixel(location);
+                if (!point) return;
+
+                // 3. Convertir a coordenadas LOCALES del canvas (restando el origen)
+                const x = point.x - left;
+                const y = point.y - top;
+
+                if (x < -this.radius_ || x > width + this.radius_ ||
+                    y < -this.radius_ || y > height + this.radius_) return;
+
+                const intensidad = Math.min(1, (weight || 1) / this.maxWeight_);
+                const grad = bctx.createRadialGradient(x, y, 0, x, y, this.radius_);
+                grad.addColorStop(0, `rgba(0,0,0,${intensidad})`);
+                grad.addColorStop(1, 'rgba(0,0,0,0)');
+
+                bctx.fillStyle = grad;
+                bctx.beginPath();
+                bctx.arc(x, y, this.radius_, 0, Math.PI * 2);
+                bctx.fill();
+            });
+
+            const imgData = bctx.getImageData(0, 0, width, height);
+            const pixels = imgData.data;
+            const lut = this.gradientCanvas_;
+
+            for (let i = 0; i < pixels.length; i += 4) {
+                const alpha = pixels[i + 3];
+                if (alpha === 0) continue;
+                const lutIndex = alpha * 4;
+                pixels[i]     = lut[lutIndex];
+                pixels[i + 1] = lut[lutIndex + 1];
+                pixels[i + 2] = lut[lutIndex + 2];
+                pixels[i + 3] = Math.round(lut[lutIndex + 3] * this.opacity_);
+            }
+
+            ctx.putImageData(imgData, 0, 0);
+        }
+
+        setData(data) {
+            this.data_ = data || [];
+            this.maxWeight_ = Math.max(1, ...this.data_.map(d => d.weight || 1));
+            this.draw();
+        }
+    };
+
+    return SimpleHeatmapClass;
 }
 /*********************************************************************************
                       * CLASE DISTRIBUCIÓN TERRITORIAL  *
