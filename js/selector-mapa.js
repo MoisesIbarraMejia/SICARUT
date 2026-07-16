@@ -499,35 +499,79 @@ async function demarcaciones() {
 // Función unidadesT modificada con tooltips
 // QUITAMOS EL PARAMTRO DISTRITO
 // async function unidadesT(demarcacion, distrito, nombreDemarcacion = null) {
+
+
+// async function unidadesT(demarcacion, nombreDemarcacion = null) {
+//     limpiarPoligonos();
+//     nivelActual = "unidades";
+//     toggleBotonRegresar(true);
+//     actualizarMensajeInformacion("unidades");
+
+//     // COMENTAMOS VARIABLES DE DITRITOS 
+//     // const numDtto = distrito;
+//     // const eliminar = "DISTRITO ELECTORAL LOCAL ";
+//     // const dttoNum = numDtto.replace(eliminar, "");
+//     // const dtto = parseInt(dttoNum);
+
+//     const demar_uts = demarcacion;
+
+
+//     try {
+//         const uts = await fetchFromApi('geometries/participacion_uts', { limit: 1851, offset: 0 });
+//         let datosUTS = uts.features;
+
+//         // // QUITAMOS EL FILTRO DE DISTRITO Y DEMARCACION 
+//         // const utsFiltradas = datosUTS.filter(ut => 
+//         //     parseInt(ut.properties.cve_demarc) === demar_uts &&
+//         //     parseInt(ut.properties.dtto_loc_d) === dtto
+//         // );
+
+//         // CAMBIAMOS EL FILTRO A SOLO DEMARCACIÓN
+//         const utsFiltradas = datosUTS.filter(ut =>
+//             parseInt(ut.properties.cve_demarc) === demar_uts
+//         );
+
+//         const featureCollection = {
+//             type: "FeatureCollection",
+//             features: utsFiltradas
+//         };
+
+//         // Limpiar datos anteriores del mapa
+//         mapaindex.data.forEach(f => mapaindex.data.remove(f));
+        
+
+//         // Agregar y guardar los nuevos features
+//         const features = mapaindex.data.addGeoJson(featureCollection);
+//         features.forEach(feature => {
+//             poligonosActuales.push(feature);
+//         });
+
+//         mapaindex.data.setStyle(function (feature) {
+//             return {
+//                 fillColor: 'rgba(0, 0, 0, 0.668)',
+//                 fillOpacity: 0.0,
+//                 strokeColor: 'rgba(0, 0, 0, 0.668)',
+//                 strokeWeight: 5
+//             };
+//         });
+
 async function unidadesT(demarcacion, nombreDemarcacion = null) {
     limpiarPoligonos();
     nivelActual = "unidades";
     toggleBotonRegresar(true);
     actualizarMensajeInformacion("unidades");
 
-    // COMENTAMOS VARIABLES DE DITRITOS 
-    // const numDtto = distrito;
-    // const eliminar = "DISTRITO ELECTORAL LOCAL ";
-    // const dttoNum = numDtto.replace(eliminar, "");
-    // const dtto = parseInt(dttoNum);
-
     const demar_uts = demarcacion;
 
-
     try {
-        const uts = await fetchFromApi('geometries/participacion_uts', { limit: 1851, offset: 0 });
-        let datosUTS = uts.features;
+        // ANTES: geometries/participacion_uts (traía TODAS las 1851 UTs)
+        // AHORA: filter_2/participacion_uts (el backend ya filtra por demarcación)
+        const uts = await fetchFromApi('filter_2/participacion_uts', {
+            cve_demarc: demar_uts
+        });
 
-        // // QUITAMOS EL FILTRO DE DISTRITO Y DEMARCACION 
-        // const utsFiltradas = datosUTS.filter(ut => 
-        //     parseInt(ut.properties.cve_demarc) === demar_uts &&
-        //     parseInt(ut.properties.dtto_loc_d) === dtto
-        // );
-
-        // CAMBIAMOS EL FILTRO A SOLO DEMARCACIÓN
-        const utsFiltradas = datosUTS.filter(ut =>
-            parseInt(ut.properties.cve_demarc) === demar_uts
-        );
+        // Ya no hace falta filtrar en JS, el backend regresa solo lo necesario
+        const utsFiltradas = uts.features;
 
         const featureCollection = {
             type: "FeatureCollection",
@@ -536,7 +580,6 @@ async function unidadesT(demarcacion, nombreDemarcacion = null) {
 
         // Limpiar datos anteriores del mapa
         mapaindex.data.forEach(f => mapaindex.data.remove(f));
-        
 
         // Agregar y guardar los nuevos features
         const features = mapaindex.data.addGeoJson(featureCollection);
@@ -2686,7 +2729,7 @@ function crearControlesSuperiores(mapa) {
     Object.assign(divInformacion.style, {
         backgroundColor: "rgba(153, 102, 204, 0.9)",
         color: "#ffffff",
-        border: "2px solid #9b59b6",
+        // border: "2px solid #9b59b6",
         padding: "8px 10px",
         borderRadius: "10px",
         fontSize: "20px",
@@ -2725,7 +2768,7 @@ function crearControlesSuperiores(mapa) {
         borderRadius: "2px",
         backgroundColor: "#ffffff",
         border: "none",
-        color: "#3c4043",
+        color: "#9966cce6",
         borderRadius: "50px",
         fontSize: "20px",
         fontWeight: "500",
@@ -2903,20 +2946,35 @@ function crearControlesSuperiores(mapa) {
     btnRegresar.innerText = "⬅ Regresar";
     btnRegresar.onclick = regresar;
 
+    // Object.assign(btnRegresar.style, {
+    //     backgroundColor: "white",
+    //     border: "1px solid gray",
+    //     padding: "10px 15px",
+    //     cursor: "pointer",
+    //     boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+    //     borderRadius: "4px",
+    //     fontSize: "14px",
+    //     fontWeight: "bold",
+    //     display: "none",
+    //     height: "42px",
+    //     boxSizing: "border-box",
+    //     whiteSpace: "nowrap",
+    //     alignSelf: "flex-start"
+    // });
+
     Object.assign(btnRegresar.style, {
-        backgroundColor: "white",
-        border: "1px solid gray",
-        padding: "10px 15px",
+        backgroundColor: "rgba(153, 102, 204, 0.9)",
+        padding: "8px 10px",
         cursor: "pointer",
-        boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
-        borderRadius: "4px",
+        boxShadow: "rgba(0, 0, 0, 0.2) 0px 4px 10px",
+        borderRadius: "10px",
         fontSize: "14px",
         fontWeight: "bold",
         display: "none",
-        height: "42px",
         boxSizing: "border-box",
         whiteSpace: "nowrap",
-        alignSelf: "flex-start"
+        alignSelf: "flex-start",
+        color: "white"
     });
 
     // SOLO la leyenda va en el contenedor con botón de ayuda (inicialmente)
