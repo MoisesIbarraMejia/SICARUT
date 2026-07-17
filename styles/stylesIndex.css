@@ -1784,10 +1784,6 @@ APARTADO DEL CONTADOR DE VISITAS
     transform: scale(1.05);
 }
 
-/* Asegurar que el modal del mapa esté sobre todo */
-.modal-overlay-mapa {
-    z-index: 3002 !important;
-}
 /***********************************************************************************************************************************************
                                                     MAPA RESPONSIVE
 *************************************************************************************************************************************************/
@@ -2055,7 +2051,7 @@ APARTADO DEL CONTADOR DE VISITAS
     display: none;              /* ← importante */
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: 3002 !important;
 }
 
 
@@ -2381,6 +2377,54 @@ APARTADO DEL CONTADOR DE VISITAS
     }
 }
 
+/* Variante de ancho completo para el método de búsqueda por ubicación */
+.method-card-mapa--full {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 40px;
+    padding: 25px 30px;
+    grid-column: 1 / -1;
+}
+
+/* El ícono usa .method-icon-mapa sin modificar; solo evitamos que se encoja */
+.method-card-mapa--full .method-icon-mapa {
+    flex-shrink: 0;
+    margin-bottom: 0; /* en las otras tarjetas tiene margin-bottom:20px por el layout vertical, aquí no aplica */
+}
+
+.method-full-texto-mapa {
+    flex: 1;
+    min-width: 0; /* evita que el texto largo empuje el contenedor */
+}
+
+.method-full-texto-mapa .method-title-mapa {
+    margin-bottom: 8px;
+}
+
+.method-full-texto-mapa .method-description-mapa {
+    margin-bottom: 12px;
+}
+
+.method-full-texto-mapa .method-steps-mapa li {
+    margin-bottom: 6px;
+}
+
+/* Responsive: apilar icono y texto en móvil */
+@media (max-width: 768px) {
+    .method-card-mapa--full {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+}
+.method-icon-mapa svg {
+    width: 50px;
+    height: 50px;
+}
 
 /***********************************************************************************************************************************************
                                                     VISTA DE LA NOTA METODOLOGICA

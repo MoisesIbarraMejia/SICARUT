@@ -36,6 +36,8 @@ let historialDatos = {
     unidad: null
 };
 
+let marcadorUbicacionUsuario = null; // Pin de la ubicación del usuario
+
 
 const API_PROXY_URL = './api-proxy.php';
 // const API_PROXY_URL = '/dev_caracteristicas_UnidadesTerritoriales/api-proxy_local.php'
@@ -87,16 +89,15 @@ function cerrarModalMapa() {
     const modal = document.getElementById('welcomeModalMapa');
     if (!modal) return;
 
-    // Animación de salida
     modal.style.animation = 'fadeOut 0.3s ease-out forwards';
 
     setTimeout(() => {
         modal.style.display = 'none';
-
-        // Reset para permitir que se muestre de nuevo con fadeIn
         modal.style.opacity = '';
         modal.style.animation = '';
 
+        // NUEVO: mostrar burbuja de ayuda para el botón de ubicación
+        mostrarBurbujaUbicacion();
     }, 300);
 }
 
@@ -297,6 +298,9 @@ async function demarcaciones() {
     nivelActual = "demarcaciones";
     toggleBotonRegresar(false);
     actualizarMensajeInformacion("demarcaciones");
+    toggleBotonRegresar(false);
+    toggleBotonUbicacion(true);   // vuelve a mostrarse al regresar a este nivel
+    limpiarMarcadorUbicacion();   // por si venías de una búsqueda por ubicación
 
     try {
         const demarcaciones = await fetchFromApi('geometries/demarcacion', { limit: 16, offset: 0 });
@@ -361,9 +365,11 @@ async function demarcaciones() {
                 const numberDemar = polyDemar.numDemar;
                 const nombreDemar = this.nombre;
 
-                // Guardar para uso posterior
                 demarcacionSeleccionada = numberDemar;
                 demarcacionNombreSeleccionada = nombreDemar;
+
+                toggleBotonUbicacion(false);   // <-- NUEVO
+                limpiarMarcadorUbicacion();    // <-- NUEVO
 
                 const bounds = new google.maps.LatLngBounds();
                 this.getPath().forEach(function (latlng) {
@@ -371,10 +377,6 @@ async function demarcaciones() {
                 });
                 mapaindex.fitBounds(bounds);
 
-                // QUTAMOSO DISTRITOS
-                // distritos(numberDemar, nombreDemar); 
-
-                // PASAMOS A UTS SALTANDONOS LOS DISTRITOS
                 unidadesT(numberDemar, nombreDemar);
             });
         });
@@ -675,7 +677,7 @@ async function unidadesT(demarcacion, nombreDemarcacion = null) {
             const cve_demarc = event.feature.getProperty('cve_demarc');
             const clave = event.feature.getProperty('cve_ut');
             const esNuevaCreacion = utsNuevaCreacion.includes(clave);
-            const demTerr = event.feature.getProperty('dem_territ');
+            const demTerr = event.feature.getProperty('dem_terr');
             const dtto = event.feature.getProperty('dtto_loc');
             const nombreUt = event.feature.getProperty('nombre');
             const latitud = event.feature.getProperty('latitud');
@@ -683,8 +685,8 @@ async function unidadesT(demarcacion, nombreDemarcacion = null) {
             const tipoUt = event.feature.getProperty('tipo_ut') || 'UT';
             const seccionesCom = event.feature.getProperty('secciones');
             const seccionesPar = event.feature.getProperty('secciones1');
-            const listanom = event.feature.getProperty('lista_30_j');
-            const tot_particip = event.feature.getProperty('participac');
+            const listanom = event.feature.getProperty('ln_30_abr');
+            const tot_particip = event.feature.getProperty('participacion');
             const particip_h = event.feature.getProperty('part_h');
             const particip_m = event.feature.getProperty('part_m');
             const particip_f = event.feature.getProperty('part_f');
@@ -1102,7 +1104,7 @@ async function unidadesT(demarcacion, nombreDemarcacion = null) {
 
                                         <!-- Lista Nominal -->
                                         <div style="background: white; padding: ${isMobile ? '12px' : '10px'}; border-radius: 6px; text-align: center; border-left: 3px solid #6B1985;">
-                                            <div style="font-size: ${isMobile ? '9px' : '8px'}; color: #666; margin-bottom: 4px; font-weight: 600;">Lista Nominal (Corte al 30 de Junio de 2025)</div>
+                                            <div style="font-size: ${isMobile ? '9px' : '8px'}; color: #666; margin-bottom: 4px; font-weight: 600;">Lista Nominal (Corte al 30 de Abril de 2026)</div>
                                             <div style="font-size: ${isMobile ? '20px' : '18px'}; color: #6B1985; font-weight: 700;">${listanom ? Number(listanom).toLocaleString() : 'Sin registro'}</div>
                                         </div>
                                     </div>
@@ -1302,7 +1304,7 @@ async function unidadesT(demarcacion, nombreDemarcacion = null) {
                                                 text-transform: uppercase;
                                                 letter-spacing: 0.3px;
                                             ">
-                                                PARTICIPACIÓN 2024 (2025 EN PROCESO DE ACTUALIZACIÓN)
+                                                PARTICIPACIÓN 2025
                                             </div>
                                             
                                             <div style="display: grid; grid-template-columns: ${isMobile ? '1fr' : '43% 55%'}; gap: ${isMobile ? '8px' : '2%'}; flex-grow: 1; align-items: center;">
@@ -1898,7 +1900,7 @@ function configurarEventosSimples() {
         const clave = props.getProperty('cve_ut') || props.Eg?.cve_ut;
         const esNuevaCreacion = utsNuevaCreacion.includes(clave);
         const cve_demarc = props.getProperty('cve_demarc') || props.Eg?.cve_demarc;
-        const demTerr = props.getProperty('dem_territ') || props.Eg?.dem_territ;
+        const demTerr = props.getProperty('dem_terr') || props.Eg?.dem_terr;
         const dtto = props.getProperty('dtto_loc') || props.Eg?.dtto_loc;
         const nombreUt = props.getProperty('nombre') || props.Eg?.nombre || 'UT Sin nombre';
         const latitud = props.getProperty('latitud') || props.Eg?.latitud;
@@ -1906,8 +1908,8 @@ function configurarEventosSimples() {
         const tipoUt = props.getProperty('tipo_ut') || props.Eg?.tipo_ut || 'UT';
         const seccionesCom = props.getProperty('secciones'); props.Eg?.secciones;
         const seccionesPar = props.getProperty('secciones1'); props.Eg?.secciones1;
-        const listanom = props.getProperty('lista_30_j'); props.Eg?.lista_30_j;
-        const tot_particip = props.getProperty('participac'); props.Eg?.participac;
+        const listanom = props.getProperty('ln_30_abr'); props.Eg?.ln_30_abr;
+        const tot_particip = props.getProperty('participacion'); props.Eg?.participacion;
         const particip_h = props.getProperty('part_h'); props.Eg?.part_h;
         const particip_m = props.getProperty('part_m'); props.Eg?.part_m;
         const particip_f = props.getProperty('part_f'); props.Eg?.part_f;
@@ -2321,7 +2323,7 @@ function configurarEventosSimples() {
 
                                     <!-- Lista Nominal -->
                                     <div style="background: white; padding: ${isMobile ? '12px' : '10px'}; border-radius: 6px; text-align: center; border-left: 3px solid #6B1985;">
-                                        <div style="font-size: ${isMobile ? '9px' : '8px'}; color: #666; margin-bottom: 4px; font-weight: 600;">Lista Nominal (Corte al 30 de Junio de 2025)</div>
+                                        <div style="font-size: ${isMobile ? '9px' : '8px'}; color: #666; margin-bottom: 4px; font-weight: 600;">Lista Nominal (Corte al 30 de Abril de 2026)</div>
                                         <div style="font-size: ${isMobile ? '20px' : '18px'}; color: #6B1985; font-weight: 700;">${listanom ? Number(listanom).toLocaleString() : 'Sin registro'}</div>
                                     </div>
                                 </div>
@@ -2521,7 +2523,7 @@ function configurarEventosSimples() {
                                             text-transform: uppercase;
                                             letter-spacing: 0.3px;
                                         ">
-                                            PARTICIPACIÓN 2024 (2025 EN PROCESO DE ACTUALIZACIÓN)
+                                            PARTICIPACIÓN 2025
                                         </div>
                                         
                                         <div style="display: grid; grid-template-columns: ${isMobile ? '1fr' : '43% 55%'}; gap: ${isMobile ? '8px' : '2%'}; flex-grow: 1; align-items: center;">
@@ -2806,9 +2808,65 @@ function crearControlesSuperiores(mapa) {
         botonInfo.style.backgroundColor = "#f8f9fa";
     };
 
+    // Crear botón de ubicación (mismo esquema visual que botonInfo)
+    const botonUbicacion = document.createElement("button");
+    botonUbicacion.id = "boton-ubicacion";
+    botonUbicacion.title = "Buscar mi ubicación";
+    botonUbicacion.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+        </svg>
+    `;
+    botonUbicacion.onclick = () => {
+        ocultarBurbujaUbicacion();
+        buscarPorUbicacion(botonUbicacion);
+    };
+
+    Object.assign(botonUbicacion.style, {
+        width: "40px",
+        height: "40px",
+        backgroundColor: "#ffffff",
+        border: "none",
+        color: "#9966cce6",
+        borderRadius: "50px",
+        cursor: "pointer",
+        boxShadow: "rgba(0, 0, 0, 0.3) 0px 1px 4px -1px",
+        transition: "all 0.3s ease",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        outline: "none",
+        flexShrink: "0"
+    });
+
+    botonUbicacion.onmouseenter = () => {
+        botonUbicacion.style.boxShadow = "rgba(0, 0, 0, 0.3) 0px 2px 8px -1px";
+        botonUbicacion.style.backgroundColor = "#f8f9fa";
+    };
+    botonUbicacion.onmouseleave = () => {
+        botonUbicacion.style.boxShadow = "rgba(0, 0, 0, 0.3) 0px 1px 4px -1px";
+        botonUbicacion.style.backgroundColor = "#ffffff";
+    };
+    botonUbicacion.onmousedown = () => {
+        botonUbicacion.style.backgroundColor = "#e8eaed";
+    };
+    botonUbicacion.onmouseup = () => {
+        botonUbicacion.style.backgroundColor = "#f8f9fa";
+    };
+
+    // Envolver el botón en un contenedor relativo para anclar la burbuja de ayuda
+    const wrapperBotonUbicacion = document.createElement("div");
+    wrapperBotonUbicacion.id = "wrapper-boton-ubicacion";
+    wrapperBotonUbicacion.style.position = "relative";
+    wrapperBotonUbicacion.style.display = "flex";
+    wrapperBotonUbicacion.appendChild(botonUbicacion);
+
     // INICIALMENTE: Ensamblar información + botón de info
     contenedorInformacionCompleto.appendChild(divInformacion);
     contenedorInformacionCompleto.appendChild(botonInfo);
+    // Se muestra solo en el nivel "demarcaciones"
+    contenedorInformacionCompleto.appendChild(wrapperBotonUbicacion);
 
     // 2. Crear contenedor del buscador + botón regresar + botón info (cuando regresar esté visible)
     const contenedorBuscadorBoton = document.createElement("div");
@@ -3008,6 +3066,270 @@ function crearControlesSuperiores(mapa) {
 
     // Crear el historial de selección
     crearHistorialSeleccion(mapa);
+}
+
+function inyectarEstilosBurbujaUbicacion() {
+    if (document.getElementById("estilos-burbuja-ubicacion")) return; // solo una vez
+
+    const style = document.createElement("style");
+    style.id = "estilos-burbuja-ubicacion";
+    style.textContent = `
+        @keyframes apareceBurbujaUbicacion {
+            from { opacity: 0; transform: translateY(-50%) translateX(-6px); }
+            to   { opacity: 1; transform: translateY(-50%) translateX(0); }
+        }
+        #burbuja-ubicacion {
+            position: absolute;
+            left: calc(100% + 14px);
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #ffffff;
+            color: #333333;
+            padding: 10px 14px;
+            border-radius: 12px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+            font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            line-height: 1.4;
+
+            min-width: 250px;
+            max-width: 300px;
+
+            border: 2px solid #9129A2;
+            z-index: 2000;
+            animation: apareceBurbujaUbicacion 0.35s ease-out;
+            transition: opacity 0.4s ease;
+        }
+        #burbuja-ubicacion .burbuja-flecha-borde {
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-top: 9px solid transparent;
+            border-bottom: 9px solid transparent;
+            border-right: 9px solid #9129A2;
+        }
+        #burbuja-ubicacion .burbuja-flecha-relleno {
+            position: absolute;
+            left: -7px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-top: 7px solid transparent;
+            border-bottom: 7px solid transparent;
+            border-right: 7px solid #ffffff;
+        }
+        #burbuja-ubicacion .burbuja-cerrar {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 20px;
+            height: 20px;
+            background: #9129A2;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        @media (max-width: 768px) {
+            #burbuja-ubicacion {
+                left: auto;
+                right: 0;
+                top: calc(100% + 14px);
+                transform: none;
+            }
+            #burbuja-ubicacion .burbuja-flecha-borde,
+            #burbuja-ubicacion .burbuja-flecha-relleno {
+                left: auto;
+                right: 12px;
+                top: -9px;
+                border-right: 9px solid transparent;
+                border-left: 9px solid transparent;
+            }
+            #burbuja-ubicacion .burbuja-flecha-borde {
+                border-bottom: 9px solid #9129A2;
+                border-top: none;
+            }
+            #burbuja-ubicacion .burbuja-flecha-relleno {
+                top: -7px;
+                border-bottom: 7px solid #ffffff;
+                border-top: none;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+function mostrarBurbujaUbicacion() {
+    const boton = document.getElementById("boton-ubicacion");
+    const wrapper = document.getElementById("wrapper-boton-ubicacion");
+    if (!boton || !wrapper) return;
+
+    // Solo mostrar si el botón está visible (nivel "demarcaciones")
+    if (getComputedStyle(boton).display === "none") return;
+
+    // Evitar duplicados
+    if (document.getElementById("burbuja-ubicacion")) return;
+
+    inyectarEstilosBurbujaUbicacion();
+
+    const burbuja = document.createElement("div");
+    burbuja.id = "burbuja-ubicacion";
+    burbuja.innerHTML = `
+        <div class="burbuja-flecha-borde"></div>
+        <div class="burbuja-flecha-relleno"></div>
+        <div class="burbuja-cerrar">&times;</div>
+        <span>📍 Mediante tu ubicación actual encuentra tu Unidad Territorial</span>
+    `;
+
+    wrapper.appendChild(burbuja);
+
+    // Cerrar manualmente
+    burbuja.querySelector(".burbuja-cerrar").onclick = (e) => {
+        e.stopPropagation();
+        ocultarBurbujaUbicacion();
+    };
+
+    // Auto-ocultar después de 40 segundos
+    window._timeoutBurbujaUbicacion = setTimeout(() => {
+        ocultarBurbujaUbicacion();
+    }, 40000);
+}
+
+function ocultarBurbujaUbicacion() {
+    if (window._timeoutBurbujaUbicacion) {
+        clearTimeout(window._timeoutBurbujaUbicacion);
+        window._timeoutBurbujaUbicacion = null;
+    }
+    const burbuja = document.getElementById("burbuja-ubicacion");
+    if (!burbuja) return;
+
+    burbuja.style.opacity = "0";
+    setTimeout(() => {
+        if (burbuja.parentNode) burbuja.remove();
+    }, 400);
+}
+function toggleBotonUbicacion(mostrar) {
+    const btn = document.getElementById("boton-ubicacion");
+    if (btn) {
+        btn.style.display = mostrar ? "flex" : "none";
+    }
+    if (!mostrar) {
+        ocultarBurbujaUbicacion();
+    }
+}
+
+function limpiarMarcadorUbicacion() {
+    if (marcadorUbicacionUsuario) {
+        marcadorUbicacionUsuario.setMap(null);
+        marcadorUbicacionUsuario = null;
+    }
+}
+
+async function buscarPorUbicacion(boton) {
+    if (!navigator.geolocation) {
+        alert("Tu navegador no soporta geolocalización.");
+        return;
+    }
+
+    // Estado de carga en el botón
+    const iconoOriginal = boton.innerHTML;
+    boton.style.pointerEvents = "none";
+    boton.style.opacity = "0.5";
+
+    navigator.geolocation.getCurrentPosition(
+        async (position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            try {
+                const respuesta = await fetchFromApi('contains/demarcacion', { lat: lat, lon: lon });
+
+                // Extraer propiedades sin importar si viene como FeatureCollection, Feature u objeto plano
+                let props = null;
+                if (respuesta?.features?.length > 0) {
+                    props = respuesta.features[0].properties;
+                } else if (respuesta?.properties) {
+                    props = respuesta.properties;
+                } else if (Array.isArray(respuesta) && respuesta.length > 0) {
+                    props = respuesta[0].properties || respuesta[0];
+                }
+
+                if (!props || props.numero_dem === undefined) {
+                    alert("No se encontró una demarcación en tu ubicación actual. Verifica que estés dentro de la CDMX.");
+                    return;
+                }
+
+                const numeroDemar = props.numero_dem;
+                const nombreDemar = props.nombre;
+
+                // Limpiar pin anterior si existía
+                limpiarMarcadorUbicacion();
+
+                // Guardar selección igual que en el click de polígono
+                demarcacionSeleccionada = numeroDemar;
+                demarcacionNombreSeleccionada = nombreDemar;
+
+                // Ocultar botón: ya no estamos en el nivel "demarcaciones"
+                toggleBotonUbicacion(false);
+
+                // Cargar las UTs de esa demarcación (limpiarPoligonos() se ejecuta dentro)
+                await unidadesT(numeroDemar, nombreDemar);
+
+                // Colocar el pin del usuario DESPUÉS de que unidadesT limpió el mapa
+                const posicionUsuario = new google.maps.LatLng(lat, lon);
+                marcadorUbicacionUsuario = new google.maps.Marker({
+                    position: posicionUsuario,
+                    map: mapaindex,
+                    title: "Tu ubicación",
+                    zIndex: 2000,
+                    icon: {
+                        url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">
+                                <path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 8 12 8 12s8-6.75 8-12c0-4.42-3.58-8-8-8z"
+                                      fill="#9129A2" stroke="#ffffff" stroke-width="1.5"/>
+                                <circle cx="12" cy="10" r="3" fill="#ffffff"/>
+                            </svg>
+                        `),
+                        scaledSize: new google.maps.Size(36, 36),
+                        anchor: new google.maps.Point(18, 34)
+                    }
+                });
+
+                mapaindex.panTo(posicionUsuario);
+                mapaindex.setZoom(14);
+
+            } catch (error) {
+                console.error("Error al consultar demarcación por ubicación:", error);
+                alert("Ocurrió un error al buscar tu ubicación. Intenta nuevamente.");
+            } finally {
+                boton.style.pointerEvents = "auto";
+                boton.style.opacity = "1";
+                boton.innerHTML = iconoOriginal;
+            }
+        },
+        (error) => {
+            boton.style.pointerEvents = "auto";
+            boton.style.opacity = "1";
+            let mensaje = "No se pudo obtener tu ubicación.";
+            if (error.code === error.PERMISSION_DENIED) {
+                mensaje = "Debes permitir el acceso a tu ubicación para usar esta función.";
+            } else if (error.code === error.TIMEOUT) {
+                mensaje = "La búsqueda de ubicación tardó demasiado. Intenta de nuevo.";
+            }
+            alert(mensaje);
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
 }
 
 // Función para actualizar el dropdown con posicionamiento correcto

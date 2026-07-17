@@ -1821,7 +1821,7 @@ function inicializarMapaOptimizado(datosCompletos) {
         // Crear mapa nuevo
         mapaGoogleDemarcacion = new google.maps.Map(mapContainer, {
             center: { lat: 19.4326, lng: -99.1332 },
-            zoom: 11,
+            zoom:11,
             mapTypeId: 'roadmap',
             mapTypeControl: false,
             zoomControl: false,
@@ -1871,7 +1871,7 @@ function procesarYCargarGeoJSON(datosCompletos) {
         const geoJSONEnriquecido = {
             type: "FeatureCollection",
             features: geoJSON.features.map(feature => {
-                const cveUT = feature.properties.clave_ut;
+                const cveUT = feature.properties.cve_ut;
                 const valor = valoresPorUT[cveUT];
                 const colorInfo = obtenerColorYClasificacionMejorada(valor, jenksBreaks); // Pasar jenksBreaks
                 
@@ -2478,7 +2478,7 @@ function agregarEventosOptimizados() {
 }
 function mostrarInfoWindowOptimizado(event, sinPorcentaje = false) {
     const feature = event.feature;
-    const cveUT = feature.getProperty('clave_ut');
+    const cveUT = feature.getProperty('cve_ut');
     const nombreUT = feature.getProperty('nombre') || feature.getProperty('NOMGEO') || `UT ${cveUT}`;
     const valor = feature.getProperty('valor_indicador');
     const colorInfo = feature.getProperty('color_info');
@@ -2555,7 +2555,7 @@ function mostrarInfoWindowOptimizado(event, sinPorcentaje = false) {
 }
 // function mostrarInfoWindowOptimizado(event, sinPorcentaje = false) {
 //     const feature = event.feature;
-//     const cveUT = feature.getProperty('clave_ut');
+//     const cveUT = feature.getProperty('cve_ut');
 //     const nombreUT = feature.getProperty('nombre') || feature.getProperty('NOMGEO') || `UT ${cveUT}`;
 //     const valor = feature.getProperty('valor_indicador');
 //     const colorInfo = feature.getProperty('color_info');
@@ -2625,26 +2625,80 @@ function ocultarTooltip() {
 }
 function ajustarVistaOptimizada(features) {
     if (!features || features.length === 0) return;
-    
-    const bounds = new google.maps.LatLngBounds();
-    let puntosAgregados = 0;
-    
+
+    // 1. Recolectar TODAS las coordenadas, soportando Polygon y MultiPolygon
+    const todasLasCoordenadas = [];
+
     features.forEach(feature => {
-        if (feature.geometry && feature.geometry.coordinates) {
-            if (feature.geometry.type === 'Polygon' && feature.geometry.coordinates[0]) {
-                feature.geometry.coordinates[0].forEach(coord => {
-                    if (coord.length >= 2) {
-                        bounds.extend(new google.maps.LatLng(coord[1], coord[0]));
-                        puntosAgregados++;
+        const geom = feature.geometry;
+        if (!geom || !geom.coordinates) return;
+
+        if (geom.type === 'Polygon') {
+            geom.coordinates[0]?.forEach(coord => {
+                if (coord && coord.length >= 2) {
+                    todasLasCoordenadas.push({ coord, feature });
+                }
+            });
+        } else if (geom.type === 'MultiPolygon') {
+            geom.coordinates.forEach(polygon => {
+                polygon[0]?.forEach(coord => {
+                    if (coord && coord.length >= 2) {
+                        todasLasCoordenadas.push({ coord, feature });
                     }
                 });
-            }
+            });
         }
     });
-    
+
+    if (todasLasCoordenadas.length === 0) {
+        console.warn('No se encontraron coordenadas válidas para ajustar la vista');
+        return;
+    }
+
+    // 2. Calcular la MEDIANA de lat/lng (a diferencia del promedio, no se distorsiona
+    //    por un punto corrupto) para detectar outliers
+    const lats = todasLasCoordenadas.map(c => c.coord[1]).sort((a, b) => a - b);
+    const lngs = todasLasCoordenadas.map(c => c.coord[0]).sort((a, b) => a - b);
+    const medianaLat = lats[Math.floor(lats.length / 2)];
+    const medianaLng = lngs[Math.floor(lngs.length / 2)];
+
+    // Radio máximo permitido alrededor de la mediana (~0.3° ≈ 33km,
+    // más que suficiente para cualquier demarcación de la CDMX)
+    const RADIO_MAXIMO = 0.3;
+
+    // 3. Construir bounds SOLO con coordenadas dentro del radio válido
+    const bounds = new google.maps.LatLngBounds();
+    let puntosAgregados = 0;
+    let puntosDescartados = 0;
+
+    todasLasCoordenadas.forEach(({ coord, feature }) => {
+        const lng = coord[0];
+        const lat = coord[1];
+        const fueraDeRango =
+            Math.abs(lat - medianaLat) > RADIO_MAXIMO ||
+            Math.abs(lng - medianaLng) > RADIO_MAXIMO;
+
+        if (!fueraDeRango) {
+            bounds.extend(new google.maps.LatLng(lat, lng));
+            puntosAgregados++;
+        } else {
+            puntosDescartados++;
+            console.warn(
+                'Coordenada corrupta descartada en UT:',
+                feature.properties?.clave_ut || feature.properties?.nombre || '(sin clave)',
+                '→ lat:', lat, 'lng:', lng
+            );
+        }
+    });
+
     if (puntosAgregados > 0) {
         mapaGoogleDemarcacion.fitBounds(bounds);
-        console.log('Vista ajustada con', puntosAgregados, 'puntos');
+        console.log(
+            'Vista ajustada con', puntosAgregados, 'puntos válidos',
+            puntosDescartados > 0 ? `(${puntosDescartados} vértices corruptos descartados)` : ''
+        );
+    } else {
+        console.warn('No quedaron puntos válidos tras filtrar outliers; se mantiene la vista por defecto');
     }
 }
 
@@ -9563,7 +9617,7 @@ class DistribucionTerritorial {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_sup1: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -9578,7 +9632,7 @@ class DistribucionTerritorial {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_sup1,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -9609,7 +9663,7 @@ class DistribucionTerritorial {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_sup3: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
 
@@ -9624,7 +9678,7 @@ class DistribucionTerritorial {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_sup3,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -9822,7 +9876,7 @@ class DistribucionTerritorial {
         try {
             const cve_UT = clave; // Variable global que ya tienes
             const response = await fetchFromApi('filter/indices_mgpc', { 
-                clave_ut: cve_UT,
+                cve_ut: cve_UT,
                 area_ut: ''
             });
             
@@ -11355,7 +11409,7 @@ class Poblacion {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_pob1: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -11370,7 +11424,7 @@ class Poblacion {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_pob1,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -11401,7 +11455,7 @@ class Poblacion {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_sup2: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -11416,7 +11470,7 @@ class Poblacion {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_sup2,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -11448,7 +11502,7 @@ class Poblacion {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_pob2: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -11463,7 +11517,7 @@ class Poblacion {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_pob2,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -11494,7 +11548,7 @@ class Poblacion {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_pob3: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -11509,7 +11563,7 @@ class Poblacion {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_pob3,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -11540,7 +11594,7 @@ class Poblacion {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_pob4: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -11555,7 +11609,7 @@ class Poblacion {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_pob4,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -11586,7 +11640,7 @@ class Poblacion {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_pob9: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -11601,7 +11655,7 @@ class Poblacion {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_pob9,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -11632,7 +11686,7 @@ class Poblacion {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_pob5: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -11647,7 +11701,7 @@ class Poblacion {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_pob5,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -11678,7 +11732,7 @@ class Poblacion {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_pob6: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -11693,7 +11747,7 @@ class Poblacion {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_pob6,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -11724,7 +11778,7 @@ class Poblacion {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_pob7: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -11739,7 +11793,7 @@ class Poblacion {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_pob7,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -12095,7 +12149,7 @@ class Migracion {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_mig1: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -12110,7 +12164,7 @@ class Migracion {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_mig1,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -12141,7 +12195,7 @@ class Migracion {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_mig2: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -12156,7 +12210,7 @@ class Migracion {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_mig2,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -12292,7 +12346,7 @@ class Etnicidad {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_etn1: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
 
@@ -12308,7 +12362,7 @@ class Etnicidad {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_etn1,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -12339,7 +12393,7 @@ class Etnicidad {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_etn2: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -12354,7 +12408,7 @@ class Etnicidad {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_etn2,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -12491,7 +12545,7 @@ class Discapacidad {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_dis1: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -12506,7 +12560,7 @@ class Discapacidad {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_dis1,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -12537,7 +12591,7 @@ class Discapacidad {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_dis2: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -12552,7 +12606,7 @@ class Discapacidad {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_dis2,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -12583,7 +12637,7 @@ class Discapacidad {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_dis3: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -12598,7 +12652,7 @@ class Discapacidad {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_dis3,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -12629,7 +12683,7 @@ class Discapacidad {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_dis4: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -12644,7 +12698,7 @@ class Discapacidad {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_dis4,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -12675,7 +12729,7 @@ class Discapacidad {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_dis5: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -12690,7 +12744,7 @@ class Discapacidad {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_dis5,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -12721,7 +12775,7 @@ class Discapacidad {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_dis6: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -12736,7 +12790,7 @@ class Discapacidad {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_dis6,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -12767,7 +12821,7 @@ class Discapacidad {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_dis7: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -12782,7 +12836,7 @@ class Discapacidad {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_dis7,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -12813,7 +12867,7 @@ class Discapacidad {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_dis8: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -12828,7 +12882,7 @@ class Discapacidad {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_dis8,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -12859,7 +12913,7 @@ class Discapacidad {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_dis9: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -12874,7 +12928,7 @@ class Discapacidad {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_dis9,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -12905,7 +12959,7 @@ class Discapacidad {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_dis10: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -12920,7 +12974,7 @@ class Discapacidad {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_dis10,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -12951,7 +13005,7 @@ class Discapacidad {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_dis11: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -12966,7 +13020,7 @@ class Discapacidad {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_dis11,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -12997,7 +13051,7 @@ class Discapacidad {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_dis12: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -13012,7 +13066,7 @@ class Discapacidad {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_dis12,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -13043,7 +13097,7 @@ class Discapacidad {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_dis13: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -13058,7 +13112,7 @@ class Discapacidad {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_dis13,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -13089,7 +13143,7 @@ class Discapacidad {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_dis14: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -13104,7 +13158,7 @@ class Discapacidad {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_dis14,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -13135,7 +13189,7 @@ class Discapacidad {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_dis15: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -13150,7 +13204,7 @@ class Discapacidad {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_dis15,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -13181,7 +13235,7 @@ class Discapacidad {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_dis16: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -13196,7 +13250,7 @@ class Discapacidad {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_dis16,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -13728,7 +13782,7 @@ class CaracteristicasEconomicas {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_ec1: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -13743,7 +13797,7 @@ class CaracteristicasEconomicas {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_ec1,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -13774,7 +13828,7 @@ class CaracteristicasEconomicas {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_ec3: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -13789,7 +13843,7 @@ class CaracteristicasEconomicas {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_ec3,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -13820,7 +13874,7 @@ class CaracteristicasEconomicas {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_ec2: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -13835,7 +13889,7 @@ class CaracteristicasEconomicas {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_ec2,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -13866,7 +13920,7 @@ class CaracteristicasEconomicas {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_ec4: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -13881,7 +13935,7 @@ class CaracteristicasEconomicas {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_ec4,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -14038,7 +14092,7 @@ class CaracteristicasEducativas {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_edu2: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -14053,7 +14107,7 @@ class CaracteristicasEducativas {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_edu2,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -14084,7 +14138,7 @@ class CaracteristicasEducativas {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_edu1: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -14099,7 +14153,7 @@ class CaracteristicasEducativas {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_edu1,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -14229,7 +14283,7 @@ class HogaresCensales {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_hog1: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -14244,7 +14298,7 @@ class HogaresCensales {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_hog1,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -14275,7 +14329,7 @@ class HogaresCensales {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_hog2: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -14290,7 +14344,7 @@ class HogaresCensales {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_hog2,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -14418,7 +14472,7 @@ class Salud {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_sal1: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
 
@@ -14434,7 +14488,7 @@ class Salud {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_sal1,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -14465,7 +14519,7 @@ class Salud {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_sal2: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
 
@@ -14481,7 +14535,7 @@ class Salud {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_sal2,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -14582,7 +14636,7 @@ class SituacionConyugal {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_sitc1: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -14597,7 +14651,7 @@ class SituacionConyugal {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_sitc1,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -14628,7 +14682,7 @@ class SituacionConyugal {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_pob8: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -14643,7 +14697,7 @@ class SituacionConyugal {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_pob8,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -14745,7 +14799,7 @@ class Vivienda {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_viv1: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -14760,7 +14814,7 @@ class Vivienda {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_viv1,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -14791,7 +14845,7 @@ class Vivienda {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_viv2: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -14806,7 +14860,7 @@ class Vivienda {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_viv2,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -14837,7 +14891,7 @@ class Vivienda {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_viv3: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -14852,7 +14906,7 @@ class Vivienda {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_viv3,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -14883,7 +14937,7 @@ class Vivienda {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_viv4: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -14898,7 +14952,7 @@ class Vivienda {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_viv4,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -14929,7 +14983,7 @@ class Vivienda {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_viv5: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -14944,7 +14998,7 @@ class Vivienda {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_viv5,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 
@@ -15519,7 +15573,7 @@ class InfoAdicional {
             const response = await fetchFromApi('filter/indices_mgpc', { 
                 cve_demarc: cveDemar,
                 ind_viv1: '',
-                clave_ut: '',
+                cve_ut: '',
                 nombre: ''
             });
             
@@ -15534,7 +15588,7 @@ class InfoAdicional {
                 // Datos para estadísticas y gráfica
                 valores: response.features.map(item => ({
                     datos: item.properties.ind_viv1,
-                    cve_ut: item.properties.clave_ut,
+                    cve_ut: item.properties.cve_ut,
                     nombre_ut: item.properties.nombre
                 })),
                 

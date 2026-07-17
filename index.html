@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Sistema de Consulta - IECM</title>
     <link rel="stylesheet" href="styles/stylesIndex.css" />
-    <link rel="stylesheet" href="styles/stylesDescargas.css" />
+    <!-- <link rel="stylesheet" href="styles/stylesDescargas.css" /> -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -1384,7 +1384,7 @@
         <div id="mapa"></div>
     </div>
 
-    <!-- Modal de Bienvenida para el Mapa -->
+        <!-- Modal de Bienvenida para el Mapa -->
         <div class="modal-overlay-mapa" id="welcomeModalMapa" style="display: none;">
 
             <div class="welcome-modal-mapa">
@@ -1399,7 +1399,7 @@
                 <div class="modal-content-mapa">
                     <p class="intro-text-mapa">
                         Descubre las <b>características geoelectorales y de participación ciudadana</b>
-                        de las Unidades Territoriales a través de dos métodos de búsqueda diseñados para facilitar la navegación:
+                        de las Unidades Territoriales a través de tres métodos de búsqueda diseñados para facilitar la navegación:
                     </p>
 
                     <!-- Métodos de búsqueda -->
@@ -1447,6 +1447,28 @@
                                 <!-- <li>Elige tu Distrito Electoral Local</li> -->
                                 <li>Ubica tu Unidad Territorial</li>
                                 <li>Conoce las características geoelectorales y de participación ciudadana y accede a sus datos sociodemográficos</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- NUEVO: Método 3 - Búsqueda por mi ubicación (ancho completo) -->
+                    <div class="method-card-mapa method-card-mapa--full">
+                        <div class="method-icon-mapa" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ubicación">
+                                <title>Ubicación</title>
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+                                <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                            </svg>
+                        </div>
+                        <div class="method-full-texto-mapa">
+                            <h3 class="method-title-mapa">Búsqueda por mi Ubicación</h3>
+                            <p class="method-description-mapa">
+                                Usa el botón de ubicación en el mapa para encontrar automáticamente tu Unidad Territorial a partir de tu posición actual.
+                            </p>
+                            <ul class="method-steps-mapa">
+                                <li>Permite el acceso a tu ubicación cuando el navegador lo solicite</li>
+                                <li>El sistema detectará tu Demarcación y cargará sus Unidades Territoriales</li>
+                                <li>Selecciona tu Unidad Territorial y accede a sus datos sociodemográficos</li>
                             </ul>
                         </div>
                     </div>
