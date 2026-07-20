@@ -117,31 +117,12 @@
 
             </section>
 
-            <section class="derecha">
-
-                <div class="text">
-
-                <h2>1.2 · Mapa base Esri</h2>
-
-                <p>
-                Adicionalmente, se incorporó como fuente complementaria el mapa base de <strong>Esri (Esri World Imagery / Esri Basemaps)</strong>, que se utilizó como apoyo cartográfico para el análisis visual espacial de las unidades territoriales. Esto permitió contextualizar geográficamente los polígonos y verificar visualmente la correspondencia entre la información censal, la cobertura del suelo y la distribución de las construcciones identificadas en el territorio.
-                </p>
-
-                <p>
-                Para más información sobre el mapa base utilizado, consulte:
-                <a href="https://www.esri.com/en-us/arcgis/products/arcgis-online/resources/basemaps" target="_blank">https://www.esri.com/en-us/arcgis/products/arcgis-online/resources/basemaps</a>
-                </p>
-
-                </div>
-
-            </section>
-                
             <section class="derecha">           
 
                 <div class="text">
 
                 <h2>02 · Procesamiento</h2>
-
+                
                 <p>
                     Realizada la descarga de los datos del Censo 2020 a nivel de manzana urbana, se procedió con las siguientes actividades:
                 </p>
@@ -270,10 +251,6 @@
                                 <strong>Capa de Manzanas INEGI:</strong> Polígonos de manzanas urbanas con información demográfica asociada del Censo de Población y Vivienda 2020
                             </li>
 
-                            <li>
-                                <strong>Mapa base de Esri:</strong> Capa de referencia satelital/cartográfica empleada como apoyo visual para la verificación espacial de la correspondencia entre manzanas, construcciones y unidades territoriales
-                            </li>
-
                         </ul>
 
                     </p>               
@@ -284,13 +261,13 @@
 
             <section class="top">
 
-                <h2>2.2.3 · CLASIFICACIÓN SUPERVISADA MEDIANTE RANDOM FOREST</h2>
+                <h2>2.2.3 · CLASIFICACIÓN BINARIA MEDIANTE RANDOM FOREST</h2>
 
                 <div class="text">         
                     
 
                     <p class="fuera-lugar">
-                        Se implementó un algoritmo de clasificación supervisada Random Forest para la detección automática de construcciones y poblaciones a partir de las bandas RGB de las imágenes satelitales. El modelo se formuló como una clasificación binaria (Con construcción / Sin construcción), incorporando además variables derivadas de las bandas espectrales para mejorar el desempeño del clasificador. El proceso incluyó:
+                        Se implementó un algoritmo de clasificación binaria Random Forest utilizando únicamente los canales RGB de la imagen satelital para la detección automática de construcciones y áreas pobladas. El proceso incluyó:
                     </p>
 
                     <table class="tabla-morada">
@@ -300,26 +277,32 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr><th>Modelo</th><td>Random Forest</td></tr>
-                            <tr><th>Características base</th><td>3 (Rojo, Verde, Azul)</td></tr>
+                            <tr><th>Características utilizadas</th><td>3 canales RGB (Rojo, Verde, Azul)</td></tr>
                             <tr><th>Normalización RGB</th><td>Sí</td></tr>
                             <tr><th>Número de estimadores</th><td>250</td></tr>
                             <tr><th>Objetivo</th><td>Detectar construcciones/poblaciones</td></tr>
-                            <tr><th>Variables derivadas incorporadas (19 en total)</th><td>Brillo (brightness), índice de exceso de verde (ExG), índice de vegetación resistente a la atmósfera visible (VARI), componentes normalizadas (r_norm, g_norm, b_norm), redness, blueness, diferencias entre bandas (rg_diff, rb_diff) y estadísticos de vecindad de 5 píxeles (media y desviación estándar por banda)</td></tr>
-
+                            
                             <thead>
                                 <tr><th colspan="2">Métricas de desempeño del clasificador</th></tr>
                             </thead>
-
-                            <tr><td>Precisión Global (entrenamiento)</td><td>0.9739 (97.4%)</td></tr>
-                            <tr><td>Precisión Global (validación)</td><td>0.9337 (93.4%)</td></tr>
-                            <tr><td>Coeficiente Kappa</td><td>0.8674</td></tr>
-                            <tr><td>OOB Score</td><td>0.9337</td></tr>
-                            <tr><td>Precisión (Precision)</td><td>0.9294 (92.9%)</td></tr>
-                            <tr><td>Sensibilidad / Recall</td><td>0.9385 (93.8%)</td></tr>
-                            <tr><td>Especificidad</td><td>0.9385 (93.8%)</td></tr>
-                            <tr><td>F1-Score</td><td>0.9339</td></tr>
-                            <tr><td>AUC-ROC</td><td>0.9818</td></tr>
+                            
+                            <tr><th colspan="2">Datos de entrenamiento</th></tr>
+                            <tr><td>Precisión Global</td><td>0.8606 (86.06%)</td></tr>
+                            <tr><td>Out-of-Bag Score</td><td>0.7697 (76.97%)</td></tr>
+                            
+                            <tr><th colspan="2">Datos de validación</th></tr>
+                            <tr><td>Precisión Global</td><td>0.7636 (76.36%)</td></tr>
+                            <tr><td>Coeficiente Kappa</td><td>0.5287</td></tr>
+                            <tr><td>Precisión (Precision)</td><td>0.8261 (82.61%)</td></tr>
+                            <tr><td>Sensibilidad/Recall</td><td>0.6786 (67.86%)</td></tr>
+                            <tr><td>Especificidad</td><td>0.6786 (67.86%)</td></tr>
+                            <tr><td>F1-Score</td><td>0.7451 (74.51%)</td></tr>
+                            <tr><td>AUC-ROC</td><td>0.9087 (90.87%)</td></tr>
+                            
+                            <tr><th colspan="2">Importancia de canales RGB</th></tr>
+                            <tr><td>Canal Rojo (R)</td><td>42.37%</td></tr>
+                            <tr><td>Canal Verde (G)</td><td>28.73%</td></tr>
+                            <tr><td>Canal Azul (B)</td><td>28.90%</td></tr>
                         </tbody>
                     </table>
                     
@@ -337,68 +320,14 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr><td>Sin Construcción</td><td>58,505</td><td>3,836</td></tr>
-                            <tr><td>Con Construcción</td><td>4,441</td><td>58,059</td></tr>
+                            <tr><td>Sin Construcción</td><td>19</td><td>9</td></tr>
+                            <tr><td>Con Construcción</td><td>4</td><td>23</td></tr>
                         </tbody>
-                    </table>
-
-                    <ul class="custom-list">
-                        <li>Verdaderos Positivos: 58,059 (detecta construcción correctamente)</li>
-                        <li>Verdaderos Negativos: 58,505 (clasifica sin construcción correctamente)</li>
-                        <li>Falsos Positivos: 3,836 (predice construcción donde no hay)</li>
-                        <li>Falsos Negativos: 4,441 (no detecta construcción donde sí hay)</li>
-                    </ul>
-
-                    <table class="tabla-morada">
-                        <thead>
-                            <tr><th colspan="4">Reporte detallado por clase</th></tr>
-                            <tr><th>Clase</th><th>Precisión</th><th>Recall</th><th>F1-Score</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>Sin Construcción</td><td>0.93</td><td>0.94</td><td>0.93</td></tr>
-                            <tr><td>Con Construcción</td><td>0.94</td><td>0.93</td><td>0.93</td></tr>
-                            <tr><td>Exactitud global</td><td></td><td></td><td>0.93</td></tr>
-                            <tr><td>Promedio macro</td><td>0.93</td><td>0.93</td><td>0.93</td></tr>
-                            <tr><td>Promedio ponderado</td><td>0.93</td><td>0.93</td><td>0.93</td></tr>
-                        </tbody>
-                    </table>
+                    </table>              
 
                     <p class="fuera-lugar">
-                        Soporte (número de píxeles evaluados): 62,341 para la clase "Sin Construcción" y 62,500 para la clase "Con Construcción", con un total de 124,841 píxeles evaluados.
-                    </p>
-
-                    <table class="tabla-morada">
-                        <thead>
-                            <tr><th colspan="3">Importancia de las características</th></tr>
-                            <tr><th>Característica</th><th>Importancia</th><th>Porcentaje</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>g_norm (Verde normalizado) — más importante</td><td>0.1653</td><td>16.5%</td></tr>
-                            <tr><td>R_mean5 (Rojo, media de vecindad 5px)</td><td>0.1236</td><td>12.4%</td></tr>
-                            <tr><td>R (Rojo)</td><td>0.0979</td><td>9.8%</td></tr>
-                            <tr><td>B_mean5 (Azul, media de vecindad 5px)</td><td>0.0944</td><td>9.4%</td></tr>
-                            <tr><td>ExG (Exceso de Verde)</td><td>0.0599</td><td>6.0%</td></tr>
-                            <tr><td>blueness</td><td>0.0630</td><td>6.3%</td></tr>
-                            <tr><td>B_std5 (Azul, desviación de vecindad 5px)</td><td>0.0536</td><td>5.4%</td></tr>
-                            <tr><td>brightness</td><td>0.0508</td><td>5.1%</td></tr>
-                            <tr><td>B (Azul)</td><td>0.0410</td><td>4.1%</td></tr>
-                            <tr><td>R_std5 (Rojo, desviación de vecindad 5px)</td><td>0.0450</td><td>4.5%</td></tr>
-                            <tr><td>G_std5 (Verde, desviación de vecindad 5px)</td><td>0.0388</td><td>3.9%</td></tr>
-                            <tr><td>redness</td><td>0.0328</td><td>3.3%</td></tr>
-                            <tr><td>VARI</td><td>0.0312</td><td>3.1%</td></tr>
-                            <tr><td>G_mean5 (Verde, media de vecindad 5px)</td><td>0.0228</td><td>2.3%</td></tr>
-                            <tr><td>b_norm (Azul normalizado)</td><td>0.0181</td><td>1.8%</td></tr>
-                            <tr><td>rg_diff</td><td>0.0176</td><td>1.8%</td></tr>
-                            <tr><td>r_norm (Rojo normalizado)</td><td>0.0157</td><td>1.6%</td></tr>
-                            <tr><td>rb_diff</td><td>0.0148</td><td>1.5%</td></tr>
-                            <tr><td>G (Verde)</td><td>0.0138</td><td>1.4%</td></tr>
-                        </tbody>
-                    </table>
-
-                    <p class="fuera-lugar">
-                        El modelo demostró un desempeño robusto durante su desarrollo y validación. En la fase de <strong>entrenamiento</strong> se alcanzó una <strong>precisión global</strong> de 97.4%, mientras que en la fase de <strong>validación</strong> con datos independientes la precisión global fue de 93.4%, un desempeño consistente en datos no vistos previamente. La <strong>precisión (precision)</strong> del 92.9% indica que de cada 100 predicciones de "construcción", cerca de 93 son correctas. La <strong>sensibilidad (recall)</strong> del 93.8% muestra que el modelo detecta correctamente la gran mayoría de las construcciones reales, y la <strong>especificidad</strong> del 93.8% demuestra una capacidad equivalente para identificar correctamente las áreas sin construcción. El <strong>F1-Score</strong> de 0.9339 representa el balance armónico entre precisión y sensibilidad. El <strong>coeficiente Kappa</strong> de 0.8674 confirma una concordancia alta entre las predicciones y la realidad observada, y el <strong>AUC-ROC</strong> de 0.9818 confirma una capacidad de discriminación muy alta entre ambas clases. De las 19 variables incorporadas al modelo, la <strong>banda verde normalizada (g_norm)</strong> resultó ser la característica con mayor poder predictivo, seguida de la media de la banda roja en vecindad de 5 píxeles (R_mean5) y la banda roja original (R).
+                        El modelo binario demostró un desempeño robusto durante su desarrollo y validación. En la fase de <strong>entrenamiento</strong>, se alcanzó una <strong>precisión global</strong> del 86.06%, indicando que el modelo clasificó correctamente más de 8 de cada 10 píxeles durante su aprendizaje. El <strong>Out-of-Bag Score</strong> de 76.97%, calculado mediante validación cruzada interna del Random Forest con muestras no utilizadas en cada árbol de decisión, confirma la capacidad de generalización del modelo y reduce el riesgo de sobreajuste. En la fase de <strong>validación</strong> con datos independientes, la <strong>precisión global</strong> descendió a 76.36%, una disminución esperada que indica un desempeño consistente en datos no vistos previamente. La <strong>precisión (precision)</strong> del 82.61% indica que de cada 100 predicciones de "construcción", aproximadamente 83 son correctas, minimizando errores de falsos positivos. La <strong>sensibilidad (recall)</strong> del 67.86% revela que el modelo detecta correctamente 2 de cada 3 construcciones reales presentes en el territorio. La <strong>especificidad</strong> del 67.86% demuestra una capacidad equivalente para identificar correctamente áreas sin construcción. El <strong>F1-Score</strong> de 74.51% representa el balance armónico entre precisión y sensibilidad, indicando un desempeño equilibrado del clasificador. El <strong>coeficiente Kappa</strong> de 0.5287 confirma una concordancia moderada superior al azar entre las predicciones y la realidad observada. Finalmente, el <strong>AUC-ROC</strong> de 0.9087 (90.87%) indica una excelente capacidad discriminatoria del modelo, confirmando su habilidad para distinguir entre áreas construidas y no construidas en diversos umbrales de decisión. El <strong>canal rojo</strong> mostró ser el más relevante (42.37%) para la identificación de construcciones, seguido por los canales verde (28.73%) y azul (28.90%) con contribuciones menores pero significativas.
                     </p>                 
-
 
 
 
@@ -437,25 +366,21 @@
 
                     <p>
 
-                        <strong> 2. Extracción y análisis de píxeles de construcción</strong> <br>
-                        Para las manzanas que superaron el filtro geométrico, se procedió a:
+                        <strong> 2. Extracción y análisis de píxeles urbanos</strong> <br>
+                        A las manzanas que superaron el filtro geométrico se les aplicaron las siguientes operaciones:
 
                         <ul class="custom-list">
 
                             <li>
-                                Extracción zonal de estadísticas: cálculo del número total de píxeles clasificados como "Con construcción" contenidos dentro de cada polígono de manzana.                         
+                                Extracción zonal de estadísticas: Cálculo del número total de píxeles clasificados como Urbano (Clase 2) dentro de cada polígono.                         
                             </li>
 
                             <li>
-                                Cálculo de densidad de construcción (<code>densidad_pct</code>): determinación del porcentaje de cobertura de construcción respecto al área total de cada manzana.
+                                Cálculo de densidad urbana: Determinación del porcentaje de cobertura urbana respecto al área total de cada manzana.
                             </li>
 
                             <li>
-                                Cálculo del área neta construida (<code>area_neta_m2</code>): superficie efectiva de construcción dentro de cada fragmento o manzana.
-                            </li>
-
-                            <li>
-                                Generación de máscara de viabilidad (<code>estado_con</code>): creación de una capa binaria ("construcción" / "sin-construcción") que identifica manzanas aptas para redistribución poblacional.
+                                Generación de máscara de viabilidad: Creación de una capa binaria para identificar manzanas aptas para redistribución poblacional.
                             </li>
 
                         </ul>
@@ -473,16 +398,16 @@
 
                     <p>
                         <strong>3. Criterios de segmentación territorial</strong><br>
-                        Se establecieron umbrales de decisión basados en:
+                        Los umbrales de decisión se definieron a partir de:
 
                         <ul class="custom-list">
 
                             <li>
-                                Porcentaje de superficie con construcción: Manzanas con baja cobertura de construcción (< umbral establecido) conservaron su integridad territorial.
+                                Porcentaje de superficie urbana: Manzanas con baja cobertura urbana (< umbral establecido) conservaron su integridad territorial.
                             </li>
 
                             <li>
-                                Densidad de píxeles clasificados como construcción: Manzanas con alta densidad de construcción (> umbral establecido) fueron segmentadas para una redistribución poblacional proporcional.
+                                Densidad de píxeles urbanos: Manzanas con alta densidad urbana (> umbral establecido) fueron segmentadas para redistribución proporcional de población.
                             </li>
 
                         </ul>
@@ -502,40 +427,15 @@
                 <div class="text">
 
 
-                    <h2>2.2.5 · Redistribución dasimétrica de variables demográficas</h2>
+                    <h2>2.2.5 · Redistribución proporcional de variables demográficas</h2>
                     
                     <p>
 
-                        La metodología de redistribución poblacional se actualizó y robusteció mediante un modelo de <strong>distribución dasimétrica</strong> que ajusta el peso poblacional de cada fragmento territorial en función de su tipo de Unidad Territorial (habitacional o normal), de su grado de dependencia de manzanas compartidas y de la densidad de construcción identificada mediante clasificación supervisada. El proceso evalúa cada manzana dividida entre dos o más Unidades Territoriales y aplica un árbol de decisiones con los siguientes casos:
+                        Para las manzanas que cumplieron los criterios de segmentación, se aplicó un modelo de redistribución 
+                        poblacional basado en la densidad de cobertura urbana identificada mediante clasificación supervisada. 
+                        Los indicadores demográficos del Censo 2020 asociados a cada manzana fueron redistribuidos proporcionalmente 
+                        entre las sub-unidades resultantes, utilizando como factor de ponderación la densidad relativa de píxeles urbanos en cada segmento.
 
-                    </p>
-
-                    <ul class="custom-list">
-
-                        <li>
-                            <strong>Caso especial — Unidades Territoriales receptoras totales:</strong> se identificaron Unidades Territoriales habitacionales cuya única manzana es compartida con otra Unidad Territorial y que, por lo tanto, no pueden quedar con una población de cero. En estos casos, la Unidad Territorial receptora recibe el 100% de la población de la manzana compartida.
-                        </li>
-
-                        <li>
-                            <strong>Caso 1 — Manzana compartida entre dos o más Unidades Territoriales habitacionales:</strong> el peso de cada Unidad Territorial se determina en función del número de manzanas propias (no compartidas) con las que cuenta. Las Unidades Territoriales que dependen completamente de manzanas compartidas (sin manzanas propias) reciben un peso máximo, mientras que aquellas con mayor número de manzanas propias reciben un peso proporcionalmente menor, evitando una sobreasignación de población.
-                        </li>
-
-                        <li>
-                            <strong>Caso 2 — Manzana compartida entre Unidades Territoriales habitacionales y normales:</strong> ajuste dasimétrico poblacional mediante un coeficiente de densidad implícita para las Unidades Territoriales habitacionales, reconociendo que la intensidad de ocupación residencial no siempre guarda una relación directa con la superficie ocupada. Para los fragmentos de Unidades Territoriales normales, el peso se calcula a partir de su proporción de área y de la densidad de construcción estimada mediante la clasificación supervisada Random Forest.
-                        </li>
-
-                        <li>
-                            <strong>Caso 3 — Manzana compartida entre Unidades Territoriales normales:</strong> el peso de cada fragmento se determina exclusivamente a partir de la densidad de construcción (<code>densidad_pct</code>) y el área neta construida (<code>area_neta_m2</code>) obtenidos del clasificador Random Forest, sin modificadores adicionales.
-                        </li>
-
-                    </ul>
-
-                    <p>
-                        En todos los casos, la distribución final de cada variable poblacional se realiza preservando exactamente la suma total del indicador en la manzana original (método de distribución por cocientes mayores, sin pérdida ni ganancia de población), de manera que la suma de la población redistribuida entre los fragmentos sea idéntica a la población total reportada por el Censo 2020 para dicha manzana.
-                    </p>
-
-                    <p>
-                        <strong>Exclusión de áreas verdes y espacios sin uso habitacional:</strong> como mejora adicional al proceso de distribución, se excluyeron del cálculo poblacional aquellas áreas correspondientes a espacios verdes, parques y superficies sin construcción, identificadas mediante la clasificación binaria Random Forest (<code>estado_con</code> = "sin-construcción"), evitando que estas superficies reciban población estimada y mejorando con ello la precisión de la estimación de la distribución demográfica en el territorio efectivamente habitado.
                     </p>
 
 
@@ -550,9 +450,17 @@
 
                     <h2>2.2.6 · Integración de variables demográficas de localidades ITER</h2>
                     
+                    <!-- <p>
+
+                        Una vez completado el proceso de redistribución proporcional para las manzanas urbanas, se procedió con la integración de las variables demográficas correspondientes a las localidades ITER del Censo 2020.
+                        Asignación territorial de localidades ITER: Las variables demográficas de las localidades ITER, que carecen de geometría espacial definida y se presentan como datos puntuales, fueron asignadas inicialmente a la sección electoral correspondiente mediante análisis de proximidad geográfica y referencias territoriales oficiales.
+                        Distribución proporcional inter-seccional: Posteriormente, las variables de población de las localidades ITER asignadas a cada sección electoral fueron distribuidas proporcionalmente entre las Unidades Territoriales que abarcan dichas secciones, utilizando como factor de ponderación la superficie relativa y la densidad poblacional previamente calculada para cada Unidad Territorial.
+                        Este proceso permitió integrar la información demográfica de áreas no amanzanadas (localidades rurales, asentamientos dispersos, etc.) al sistema territorial de análisis, complementando la información ya procesada de manzanas urbanas.
+
+                    </p> -->
                     <p>
 
-                        Una vez completado el proceso de redistribución dasimétrica para las manzanas urbanas, se procedió con la integración de las variables demográficas correspondientes a las localidades ITER del Censo 2020. Asignación territorial de localidades ITER: Las variables demográficas de las localidades ITER, que carecen de geometría espacial definida y se presentan como datos puntuales, fueron asignadas inicialmente a la sección electoral correspondiente mediante análisis de proximidad geográfica y referencias territoriales oficiales. Distribución proporcional inter-seccional: Posteriormente, las variables de población de las localidades ITER asignadas a cada sección electoral fueron distribuidas proporcionalmente entre las Unidades Territoriales que abarcan dichas secciones, utilizando como factor de ponderación la superficie relativa y la densidad poblacional previamente calculada para cada Unidad Territorial. Este proceso permitió integrar la información demográfica de áreas no amanzanadas (localidades rurales, asentamientos dispersos, etc.) al sistema territorial de análisis, complementando la información ya procesada de manzanas urbanas.
+                        Una vez completado el proceso de redistribución proporcional para las manzanas urbanas, se procedió con la integración de las variables demográficas correspondientes a las localidades ITER del Censo 2020. Asignación territorial de localidades ITER: Las variables demográficas de las localidades ITER, que carecen de geometría espacial definida y se presentan como datos puntuales, fueron asignadas inicialmente a la sección electoral correspondiente mediante análisis de proximidad geográfica y referencias territoriales oficiales. Distribución proporcional inter-seccional: Posteriormente, las variables de población de las localidades ITER asignadas a cada sección electoral fueron distribuidas proporcionalmente entre las Unidades Territoriales que abarcan dichas secciones, utilizando como factor de ponderación la superficie relativa y la densidad poblacional previamente calculada para cada Unidad Territorial. Este proceso permitió integrar la información demográfica de áreas no amanzanadas (localidades rurales, asentamientos dispersos, etc.) al sistema territorial de análisis, complementando la información ya procesada de manzanas urbanas.
                         Una vez consolidada la información, se calcularon los porcentajes y/o índices de los indicadores <strong>sociodemográficos</strong> por unidad territorial; los cuales se mapearon por cada una de las <strong>1,851 unidades territoriales,</strong> agregando el valor máximo y el mínimo del mismo indicador.
                         Los porcentajes contenidos en el documento se truncan a dos decimales, por lo que su sumatoria podría no dar el <strong>100%</strong> debido al redondeo de cifras. Esto no implica un error.
                         Los índices compuestos de disponibilidad se obtuvieron mediante la <strong>Técnica de reescalamiento,</strong> la cual transforma las variables al intervalo [0,1], empleando la distancia entre los valores máximos y mínimos.
@@ -573,7 +481,7 @@
 
             </section>
 
-            <section class="derecha">       
+            <!-- <section class="derecha">       
                 
                 <img src="imagenes/sqlGis.png" alt="Planet Labs">
 
@@ -593,19 +501,7 @@
                             </li>
 
                             <li>
-                                Información de cobertura del suelo y construcciones derivada de clasificación supervisada Random Forest (RGB)
-                            </li>
-
-                            <li>
-                                Ajuste dasimétrico poblacional por tipo de Unidad Territorial (habitacional / normal) y densidad de construcción
-                            </li>
-
-                            <li>
-                                Exclusión de áreas verdes, parques y superficies sin construcción del cálculo poblacional
-                            </li>
-
-                            <li>
-                                Apoyo visual del mapa base de Esri para el análisis espacial de validación
+                                Información de cobertura del suelo derivada de clasificación supervisada    
                             </li>
 
                             <li>
@@ -622,12 +518,12 @@
 
                     <p>
                         Esta metodología permitió generar un sistema de información territorial con mayor resolución espacial y precisión en la distribución de 
-                        variables poblacionales, aprovechando las capacidades de la percepción remota, la clasificación supervisada y el ajuste dasimétrico poblacional para optimizar la representación cartográfica de datos sociodemográficos.
+                        variables poblacionales, aprovechando las capacidades de la percepción remota para optimizar la representación cartográfica de datos sociodemográficos.
                     </p>
 
                 </div>            
 
-            </section>
+            </section> -->
 
             <section class="infografia">
 
@@ -1108,3 +1004,4 @@
     
 
 </div>
+

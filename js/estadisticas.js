@@ -1031,6 +1031,7 @@ async function cargarDatosTablaUT() {
 // Función para llenar la tabla con los datos de la UT (ajustada para la nueva estructura)
 // Función para llenar la tabla con los datos de la UT (ajustada para la nueva estructura)
 function llenarTablaUT(ut) {
+    window.datosUTActual = ut;
     // Mapear tipo de UT
     const tipoUT = ut.tipo_ut === 'PO' ? 'Integrada por Pueblos o Barrios Originarios' : 'Conformada por Colonias y Unidades Habitacionales';
 
@@ -1243,6 +1244,12 @@ async function initMap() {
 
         // Agrega y guarda los nuevos features
         const features = staticMap.data.addGeoJson(featureCollection);
+
+        // Evita que el polígono (invisible) de la UT bloquee el hover
+        // de las secciones que están debajo de él
+        features.forEach(feature => {
+            staticMap.data.overrideStyle(feature, { clickable: false });
+        });
 
         staticMap.data.setStyle({
             fillColor: 'rgba(255, 255, 255, 0)',
@@ -1479,6 +1486,143 @@ function mostrarSecciones(geoJsonData) {
             crearEtiquetaSeccion(feature);
         }
     });
+
+    google.maps.event.clearListeners(seccionesLayer, 'mouseover');
+    google.maps.event.clearListeners(seccionesLayer, 'mouseout');
+
+    seccionesLayer.addListener('mouseover', function(event) {
+        seccionesLayer.overrideStyle(event.feature, { fillOpacity: 0.35, strokeWeight: 4 });
+        resaltarSeccionEnTabla(event.feature.getProperty('secc'));
+    });
+
+    seccionesLayer.addListener('mouseout', function(event) {
+        seccionesLayer.revertStyle(event.feature);
+        quitarResaltadoSecciones();
+    });
+
+    mostrarPanelSecciones();
+}
+
+function crearPanelSeccionesFlotante() {
+    let panel = document.getElementById('panel-secciones-flotante');
+    if (panel) return panel;
+
+    panel = document.createElement('div');
+    panel.id = 'panel-secciones-flotante';
+    panel.className = 'panel-secciones-flotante';
+    panel.innerHTML = `
+        <div id="panel-secciones-header" class="panel-secciones-header">
+            <span>Secciones de la Unidad Territorial</span>
+            <button id="panel-secciones-cerrar" class="panel-secciones-cerrar" type="button" title="Cerrar">✕</button>
+        </div>
+        <div class="panel-secciones-body">
+            <div class="panel-secciones-columna">
+                <h4>Completas</h4>
+                <div id="lista-secciones-completas" class="panel-secciones-lista"></div>
+            </div>
+            <div class="panel-secciones-columna">
+                <h4>Parciales</h4>
+                <div id="lista-secciones-parciales" class="panel-secciones-lista"></div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(panel);
+
+    document.getElementById('panel-secciones-cerrar').addEventListener('click', () => {
+        panel.style.display = 'none';
+    });
+
+    hacerElementoArrastrable(panel, document.getElementById('panel-secciones-header'));
+    return panel;
+}
+
+function parsearListaSecciones(texto) {
+    if (!texto) return [];
+    return String(texto).split(',').map(s => s.trim()).filter(s => s.length > 0);
+}
+
+function actualizarPanelSecciones() {
+    const contCompletas = document.getElementById('lista-secciones-completas');
+    const contParciales = document.getElementById('lista-secciones-parciales');
+    if (!contCompletas || !contParciales) return;
+
+    const ut = window.datosUTActual || {};
+    const completas = parsearListaSecciones(ut.secciones);
+    const parciales = parsearListaSecciones(ut.secciones1);
+
+    contCompletas.innerHTML = completas.length
+        ? completas.map(s => `<span class="chip-seccion" data-secc="${s}">${s}</span>`).join('')
+        : '<span class="panel-secciones-vacio">Sin secciones completas</span>';
+
+    contParciales.innerHTML = parciales.length
+        ? parciales.map(s => `<span class="chip-seccion" data-secc="${s}">${s}</span>`).join('')
+        : '<span class="panel-secciones-vacio">Sin secciones parciales</span>';
+}
+
+async function mostrarPanelSecciones() {
+    const panel = crearPanelSeccionesFlotante();
+    if (!window.datosUTActual) {
+        try { await cargarDatosTablaUT(); } catch (e) { console.warn(e); }
+    }
+    actualizarPanelSecciones();
+    panel.style.display = 'flex';
+}
+
+function ocultarPanelSecciones() {
+    const panel = document.getElementById('panel-secciones-flotante');
+    if (panel) panel.style.display = 'none';
+    quitarResaltadoSecciones();
+}
+
+function resaltarSeccionEnTabla(secc) {
+    quitarResaltadoSecciones();
+    if (secc === undefined || secc === null || secc === '') return;
+    const chip = document.querySelector(`.chip-seccion[data-secc="${CSS.escape(String(secc))}"]`);
+    if (chip) {
+        chip.classList.add('chip-seccion-activa');
+        chip.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+}
+
+function quitarResaltadoSecciones() {
+    document.querySelectorAll('.chip-seccion-activa').forEach(el => el.classList.remove('chip-seccion-activa'));
+}
+
+function hacerElementoArrastrable(elemento, manija) {
+    if (!elemento || !manija) return;
+    let arrastrando = false, offsetX = 0, offsetY = 0;
+    manija.style.cursor = 'move';
+
+    function iniciarArrastre(clientX, clientY) {
+        const rect = elemento.getBoundingClientRect();
+        elemento.style.left = rect.left + 'px';
+        elemento.style.top = rect.top + 'px';
+        elemento.style.right = 'auto';
+        elemento.style.bottom = 'auto';
+        offsetX = clientX - rect.left;
+        offsetY = clientY - rect.top;
+        arrastrando = true;
+    }
+
+    function moverA(clientX, clientY) {
+        if (!arrastrando) return;
+        const maxLeft = window.innerWidth - elemento.offsetWidth;
+        const maxTop = window.innerHeight - elemento.offsetHeight;
+        elemento.style.left = Math.max(0, Math.min(clientX - offsetX, maxLeft)) + 'px';
+        elemento.style.top = Math.max(0, Math.min(clientY - offsetY, maxTop)) + 'px';
+    }
+
+    manija.addEventListener('mousedown', e => { iniciarArrastre(e.clientX, e.clientY); e.preventDefault(); });
+    document.addEventListener('mousemove', e => moverA(e.clientX, e.clientY));
+    document.addEventListener('mouseup', () => arrastrando = false);
+
+    manija.addEventListener('touchstart', e => {
+        const t = e.touches[0]; iniciarArrastre(t.clientX, t.clientY);
+    }, { passive: true });
+    document.addEventListener('touchmove', e => {
+        const t = e.touches[0]; moverA(t.clientX, t.clientY);
+    }, { passive: true });
+    document.addEventListener('touchend', () => arrastrando = false);
 }
 
 
@@ -1707,6 +1851,7 @@ function limpiarSecciones() {
     if (window.marcadoresSecciones) {
         window.marcadoresSecciones.forEach(marker => marker.setMap(null));
         window.marcadoresSecciones = [];
+        ocultarPanelSecciones();
     }
 }
 

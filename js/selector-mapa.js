@@ -3188,7 +3188,7 @@ function mostrarBurbujaUbicacion() {
         <div class="burbuja-flecha-borde"></div>
         <div class="burbuja-flecha-relleno"></div>
         <div class="burbuja-cerrar">&times;</div>
-        <span>📍 Mediante tu ubicación actual encuentra tu Unidad Territorial</span>
+        <span>Mediante tu ubicación actual encuentra tu Unidad Territorial</span>
     `;
 
     wrapper.appendChild(burbuja);
