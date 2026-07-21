@@ -601,6 +601,9 @@ APARTADO DEL MENU DE ICONOS FACEBOOK,INSTAGRAM, CREDITOS
   border-radius: 12px 0 0 12px;
   z-index: 1000;
 }
+.social-menu.hidden {
+  display: none !important;
+}
 
 .social-menu a {
   position: relative;
@@ -765,12 +768,6 @@ APARTADO DEL MENU DE ICONOS FACEBOOK,INSTAGRAM, CREDITOS
 .credits-content button:hover {
   background: #ddd;
 }
-
-
-
-
-
-
 
 /* ===== ANIMACIONES SPINNER ORBITS ===== */
 .spinner-box {
@@ -4849,7 +4846,7 @@ header h1 {
 }
 
 .texto-infografia-glosario a{
-  color: blue;
+  color: rgb(0, 0, 0);
 }
 
 

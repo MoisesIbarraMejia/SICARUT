@@ -220,6 +220,9 @@ function mostrarCirculosYHero() {
         circlesContainer.classList.remove('hidden');
         circlesContainer.classList.add('show');
         circlesShowing = true;
+
+        // Mostrar menú lateral solo después de entrar
+        document.querySelector('.social-menu')?.classList.remove('hidden');
         
         // if (!isMobile()) {
         //     setTimeout(() => {
