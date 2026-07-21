@@ -2389,12 +2389,24 @@ function descarga() {
             <div class="checkbox-grid">
                 ${checkboxesHTML}
             </div>
-            <button id="btnSeleccionar" class="btn-descargar">Siguiente</button>
-            <button id="btnCerrar" class="btn-cerrar">Cerrar</button>
+            <div class="botones-descarga">
+                <button id="btnSeleccionar" class="btn-descargar">Siguiente</button>
+                <button id="btnCerrar" class="btn-cerrar">Cerrar</button>
+                <button id="btnTodoDemarcaciones" type="button" class="btn-seleccionar-todos">Seleccionar todos</button>
+            </div>
 
         `;
 
         overlay.querySelector("#btnCerrar").addEventListener("click", () => overlay.remove());
+
+        // Seleccionar/deseleccionar todas las demarcaciones (botón)
+        const checksDemarcaciones = overlay.querySelectorAll("#descargas-demarcacion .checkbox-grid input[type=checkbox]");
+        const btnTodoDemarcaciones = overlay.querySelector("#btnTodoDemarcaciones");
+        btnTodoDemarcaciones.addEventListener("click", () => {
+            const todosMarcados = Array.from(checksDemarcaciones).every(cb => cb.checked);
+            checksDemarcaciones.forEach(cb => cb.checked = !todosMarcados);
+            btnTodoDemarcaciones.textContent = !todosMarcados ? "Deseleccionar todos" : "Seleccionar todos";
+        });
 
         overlay.querySelector("#btnSeleccionar").addEventListener("click", () => {
 
@@ -2438,9 +2450,9 @@ function descarga() {
 
                 //Demarcacion, UTS y Secciones
                 'dem_territ': 'Demarcación Territorial',
-                'dtto_loc_d': 'Distrito Local',
+                'dtto_loc': 'Distrito Local',
                 'cve_demarc': 'Clave Demarcación',
-                'clave_ut': 'Clave de la Unidad Territorial',
+                'cve_ut': 'Clave de la Unidad Territorial',
                 'nombre': 'Nombre de la Unidad Territorial',
                 'secciones': 'Secciones Completas',
                 'secciones1': 'Secciones Parciales',
@@ -2702,12 +2714,24 @@ function descarga() {
             <div class="checkbox-grid">
                 ${categoriasHTML}
             </div>
-            <button id="btnDescargar" class="btn-descargar">Descargar</button>
-            <button id="btnAtras" class="btn-cerrar">Atrás</button>
+            <div class="botones-descarga">
+                <button id="btnDescargar" class="btn-descargar">Descargar</button>
+                <button id="btnAtras" class="btn-cerrar">Atrás</button>
+                <button id="btnTodoCategorias" type="button" class="btn-seleccionar-todos">Seleccionar todos</button>
+            </div>
         `;
 
         // regresar al menu demarcaciones
         overlay.querySelector("#btnAtras").addEventListener("click", () => mostrarDemarcaciones(overlay));
+
+        // Seleccionar/deseleccionar todas las categorías (botón)
+        const checksCategorias = overlay.querySelectorAll("#descargas-demarcacion .checkbox-grid input[type=checkbox]");
+        const btnTodoCategorias = overlay.querySelector("#btnTodoCategorias");
+        btnTodoCategorias.addEventListener("click", () => {
+            const todosMarcados = Array.from(checksCategorias).every(cb => cb.checked);
+            checksCategorias.forEach(cb => cb.checked = !todosMarcados);
+            btnTodoCategorias.textContent = !todosMarcados ? "Deseleccionar todos" : "Seleccionar todos";
+        });
 
         // boton descargar
         overlay.querySelector("#btnDescargar").addEventListener("click", async () => {
@@ -2771,11 +2795,11 @@ function descarga() {
                     //     const libroExcel = XLSX.utils.book_new();
 
                     // ===== GENERAR UN ARCHIVO POR CATEGORÍA USANDO LA NUEVA FUNCION GENERADORA DE ESTILOS DE EXCEL=====
-                    for (const categoria of categoriasSeleccionadas) {
+                    for (const [dem, registros] of Object.entries(datosPordemar)) {
 
                         const hojasParaWorkbook = [];
 
-                        Object.entries(datosPordemar).forEach(([dem, registros]) => {
+                        for (const categoria of categoriasSeleccionadas) {
 
                             let datosHoja = [];
 
@@ -2784,7 +2808,7 @@ function descarga() {
                                 datosHoja = registros.map(item => ({
 
                                     "Nombre UT": item.nombre,
-                                    "Clave UT": item.clave_ut,
+                                    "Clave UT": item.cve_ut,
                                     "Superficie de la Unidad Territorial respecto a la Demarcación": item.ind_sup1,
                                     // "Espacio por habitante (m²/hab)": item.ind_sup3
                                     
@@ -2797,7 +2821,7 @@ function descarga() {
                                 datosHoja = registros.map(item => ({
                                     
                                     "Nombre UT": item.nombre,
-                                    "Clave UT": item.clave_ut,
+                                    "Clave UT": item.cve_ut,
                                     //"Porcentaje de Población de la Unidad Territorial respecto a la Demarcacion" : item.ind_pob1,
                                     "Población Total": item.pobtot,
                                     "Densidad de Población (HAB/HECT)": item.ind_sup2,
@@ -2827,7 +2851,7 @@ function descarga() {
                                 datosHoja = registros.map(item => ({
 
                                     "Nombre UT": item.nombre,
-                                    "Clave UT": item.clave_ut,                                    
+                                    "Clave UT": item.cve_ut,                                    
                                     "Promedio De Ocupantes Por Vivienda" : item.ind_viv1,                                    
                                     "Porcentaje de Viviendas con Piso de Tierra" : item.ind_viv2,                                    
                                     "Índice Disponibilidad de Servicios y Equipamiento" : item.ind_viv3,                                    
@@ -2843,7 +2867,7 @@ function descarga() {
                                 datosHoja = registros.map(item => ({
 
                                     "Nombre UT": item.nombre,
-                                    "Clave UT": item.clave_ut,
+                                    "Clave UT": item.cve_ut,
                                     "Población con discapacidad": item.ind_dis1,
                                     "Población con discapacidad para caminar, subir o bajar": item.ind_dis2,
                                     "Población con discapacidad para ver, aun usando lentes": item.ind_dis3,
@@ -2870,7 +2894,7 @@ function descarga() {
                                 datosHoja = registros.map(item => ({
 
                                     "Nombre UT": item.nombre,
-                                    "Clave UT": item.clave_ut,
+                                    "Clave UT": item.cve_ut,
                                     "Población de 3 años y más que habla alguna lengua indígena": item.ind_etn1,
                                     "Población que se considera afromexicana o afrodescendiente": item.ind_etn2
 
@@ -2883,7 +2907,7 @@ function descarga() {
                                 datosHoja = registros.map(item => ({
 
                                     "Nombre UT": item.nombre,
-                                    "Clave UT": item.clave_ut,                                    
+                                    "Clave UT": item.cve_ut,                                    
                                     "Población no Nativa" : item.ind_mig1,                                    
                                     "Población Migrante Estatal" : item.ind_mig2,
                                     // "Población nacida en otra entidad": item.pnacoe,
@@ -2899,7 +2923,7 @@ function descarga() {
                                 datosHoja = registros.map(item => ({
 
                                     "Nombre UT": item.nombre,
-                                    "Clave UT": item.clave_ut,
+                                    "Clave UT": item.cve_ut,
                                     
                                     "Población económicamente activa (PEA)" : item.ind_ec1,                                    
                                     "Población Económicamente Activa Ocupada" : item.ind_ec3,                                    
@@ -2919,7 +2943,7 @@ function descarga() {
                                 datosHoja = registros.map(item => ({
 
                                     "Nombre UT": item.nombre,
-                                    "Clave UT": item.clave_ut,                                    
+                                    "Clave UT": item.cve_ut,                                    
                                     "Porcentaje de Población con Rezago Educativo" : item.ind_edu1,                                    
                                     "Porcentaje de población con educación posbásica" : item.ind_edu2,
                                     // "Población 15+ Sin Escolaridad": item.p15ym_se,
@@ -2935,7 +2959,7 @@ function descarga() {
                                 datosHoja = registros.map(item => ({
 
                                     "Nombre UT": item.nombre,
-                                    "Clave UT": item.clave_ut,                                    
+                                    "Clave UT": item.cve_ut,                                    
                                     "Relación Mujer/Hombre Jefatura De Hogar" : item.ind_hog1,                                    
                                     "Hogares con jefatura de hogar mujer" : item.ind_hog2,
                                     // "Total de Hogares Censales": item.tothog,
@@ -2951,7 +2975,7 @@ function descarga() {
                                 datosHoja = registros.map(item => ({
 
                                     "Nombre UT": item.nombre,
-                                    "Clave UT": item.clave_ut,                                    
+                                    "Clave UT": item.cve_ut,                                    
                                     "Porcentaje de Población sin Afiliación a Servicios de Salud" : item.ind_sal1,                                    
                                     "Porcentaje de Población Afiliada a Servicios de Salud" : item.ind_sal2,
                                     // "Población sin Afiliación a Servicios de Salud": item.psinder,
@@ -2966,7 +2990,7 @@ function descarga() {
                                 datosHoja = registros.map(item => ({
 
                                     "Nombre UT": item.nombre,
-                                    "Clave UT": item.clave_ut,                                    
+                                    "Clave UT": item.cve_ut,                                    
                                     "Porcentaje de Población Soltera" : item.ind_sitc1,
                                     "Personas Casadas o Unidas" : item.ind_pob8,
                                     // "Población 12+ Soltera o nunca unida": item.p12ym_solt,
@@ -2978,23 +3002,17 @@ function descarga() {
 
                             if (datosHoja.length > 0) {
 
-                                // const hojaExcel = XLSX.utils.json_to_sheet(datosHoja);
-                                // XLSX.utils.book_append_sheet(libroExcel, hojaExcel, dem.substring(0, 30));
                                 hojasParaWorkbook.push({
-                                    nombreHoja: dem,
+                                    nombreHoja: categoria.substring(0, 30),
                                     datos: datosHoja
                                 });
                             }
 
-                        });
+                        }
 
-                        
-                        // Descargamos un archivo distinto por categoria
-                        // XLSX.writeFile(libroExcel, `${categoria.replace(/\s+/g, "_")}.xlsx`);
-
-                        // ===== USAR LA NUEVA FUNCIÓN =====
+                        // ===== USAR LA NUEVA FUNCIÓN: un archivo por demarcación =====
                         await descargarExcelConFormato({
-                            nombreArchivo: categoria.replace(/\s+/g, "_"),
+                            nombreArchivo: dem.replace(/\s+/g, "_"),
                             hojas: hojasParaWorkbook
                         });
 
@@ -3012,7 +3030,7 @@ function descarga() {
                     //         //Preparamos los datos en formato de objeto para excell
                     //         const datosHoja = registros.map(item => ({
 
-                    //             "Clave UT": item.clave_ut,
+                    //             "Clave UT": item.cve_ut,
                     //             "Superficie Entidad/Distrito": item.ind_sup1,
                     //             "Densidad de Población (hab/m²)": item.ind_sup2
 
@@ -3041,7 +3059,7 @@ function descarga() {
                     //         //Preparamos los datos en formato de objeto para excell
                     //         const datosHoja = registros.map(item => ({
 
-                    //             "Clave UT": item.clave_ut,
+                    //             "Clave UT": item.cve_ut,
                     //             "Población Total": item.pobtot,
                     //             "Población Femenina": item.pobfem,
                     //             "Población Masculina": item.pobmas,

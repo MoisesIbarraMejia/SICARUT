@@ -90,6 +90,21 @@ let categoriaActualMenu = null; // Nueva variable para recordar la categoría
                 //  "Población sin discapacidad, limitación, problema o condición mental", "Población sin discapacidad, limitación, problema o condición mental"
 // MIgracion: ,  "Población masculina de 5 años y más residente en otra entidad en marzo de 2015"
                
+// Iconos institucionales por categoría (SOLO para el menú principal de Temas)
+const iconosTemas = {
+    "Distribución Territorial": "fa-draw-polygon",
+    "Composición Poblacional": "fa-users",
+    "Vivienda": "fa-house",
+    "Discapacidad": "fa-wheelchair",
+    "Etnicidad": "fa-earth-americas",
+    "Migración": "fa-route",
+    "Características Económicas": "fa-briefcase",
+    "Características Educativas": "fa-graduation-cap",
+    "Hogares Censales": "fa-people-roof",
+    "Afiliación a Servicios de Salud": "fa-briefcase-medical",
+    "Situación Conyugal": "fa-ring",
+    "Información Adicional": "fa-leaf"
+};
 //Datos mapas de calor
 const menuDataCalor = {
 
@@ -539,9 +554,14 @@ function closeSidebar(menuId) {
 const menuMapasCalor = document.getElementById('menu-principal-calor');
 Object.keys(menuDataCalor).forEach(categoria => {
 
+    const icono = iconosTemas[categoria] || 'fa-circle-info';
+
     const div = document.createElement('div');
     div.classList.add('menu-item');
-    div.textContent = categoria;
+    div.innerHTML = `
+        <span class="menu-item-icono"><i class="fa-solid ${icono}"></i></span>
+        <span class="menu-item-texto">${categoria}</span>
+    `;
     div.onclick = () => abrirSubmenuCalor(categoria);
     menuMapasCalor.appendChild(div);
 
@@ -565,7 +585,12 @@ function abrirSubmenuCalor(categoria) {
     categoriaActualMenu = categoria;
     document.getElementById('menu-principal-calor').style.display = 'none';
     document.getElementById('submenu-calor').style.display = 'block';
+    document.getElementById('buscador-temas-wrap').style.display = 'none';
     document.getElementById('submenu-title-calor').textContent = categoria;
+
+    // Resetear buscador de variables al entrar a una nueva categoría
+    const buscadorSubtemas = document.getElementById('buscador-subtemas');
+    if (buscadorSubtemas) buscadorSubtemas.value = '';
     
     // Guardar categoría actual
     categoriaActualMenu = categoria;
@@ -866,7 +891,17 @@ function volverMenuPrincipal(idMenu) {
         cargarSecciones();
         
         document.getElementById('submenu-calor').style.display = 'none';
-        document.getElementById('menu-principal-calor').style.display = 'block';
+        document.getElementById('menu-principal-calor').style.display = '';
+        document.getElementById('buscador-temas-wrap').style.display = '';
+
+        // Resetear buscador de temas
+        const buscadorTemas = document.getElementById('buscador-temas');
+        if (buscadorTemas) {
+            buscadorTemas.value = '';
+            document.querySelectorAll('#menu-principal-calor .menu-item').forEach(item => {
+                item.style.display = 'flex';
+            });
+        }
         
         // Resetear categoría actual
         categoriaActualMenu = null;
@@ -936,7 +971,8 @@ function resetearNavegacionMenus() {
     
     // Volver a menús principales
     document.getElementById('submenu-calor').style.display = 'none';
-    document.getElementById('menu-principal-calor').style.display = 'block';
+    document.getElementById('menu-principal-calor').style.display = '';
+    document.getElementById('buscador-temas-wrap').style.display = '';
     document.getElementById('submenu-indicadores').style.display = 'none';
     document.getElementById('menu-principal-indicadores').style.display = 'block';
 }
@@ -16506,3 +16542,22 @@ class InfoAdicional {
     }
 }
 
+/*******************************************************
+ *   BUSCADORES DEL MENÚ PRINCIPAL (Temas y Subtemas)   *
+ *   Filtra en vivo las tarjetas de #menu-mapas-calor   *
+ *******************************************************/
+document.getElementById('buscador-temas')?.addEventListener('input', function(e) {
+    const filtro = e.target.value.trim().toLowerCase();
+    document.querySelectorAll('#menu-principal-calor .menu-item').forEach(item => {
+        const texto = item.querySelector('.menu-item-texto')?.textContent.toLowerCase() || '';
+        item.style.display = texto.includes(filtro) ? 'flex' : 'none';
+    });
+});
+
+document.getElementById('buscador-subtemas')?.addEventListener('input', function(e) {
+    const filtro = e.target.value.trim().toLowerCase();
+    document.querySelectorAll('#submenu-items-calor .submenu-item').forEach(item => {
+        const texto = item.textContent.toLowerCase();
+        item.style.display = texto.includes(filtro) ? 'flex' : 'none';
+    });
+});

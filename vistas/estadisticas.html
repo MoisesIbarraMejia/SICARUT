@@ -43,24 +43,46 @@
 
   <div id="btn-indicadores" style="display: none;" class="hamburger" onclick="toggleSidebar('menu-indicadores')">☰ Indicadores por Demarcación</div>
 
-  <!-- menu mapas de calor -->
-  <div class="sidebar" id="menu-mapas-calor">
+    <!-- menu mapas de calor -->
+    <div class="sidebar" id="menu-mapas-calor">
 
-      <!-- menu dinamico -->
-      <div id="menu-principal-calor">
-        <h1 id="titulo-temas">Temas</h1>
-      </div>
+        <div class="sidebar-header">
+            <div class="sidebar-header-icono"><i class="fa-solid fa-city"></i></div>
+            <div class="sidebar-header-textos">
+            <h2>Unidad Territorial</h2>
+            <p>Variables sociodemográficas por tema</p>
+            </div>
+        </div>
 
-      <!-- submenu -->
-      <div id="submenu-calor" style="display:none;">
-        <h1 class="titulo-submenu-calor" >Subtemas</h1>
-        <div id="calor" class="back-btn" onclick="volverMenuPrincipal(this.id)">⬅ Regresar</div>
-        <div class="menu-title" id="submenu-title-calor"></div>
-        <div id="submenu-items-calor"></div>
-      </div>
+        <div class="sidebar-buscador" id="buscador-temas-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="buscador-temas" placeholder="Buscar tema..." autocomplete="off">
+        </div>
 
-      <!-- Información de UT seleccionada - AL FINAL -->
-      <div id="info-ut-seleccionada" class="info-ut-container">  
+        <!-- menu dinamico -->
+        <div id="menu-principal-calor">
+            <h1 id="titulo-temas">Temas</h1>
+        </div>
+
+        <!-- submenu -->
+        <div id="submenu-calor" style="display:none;">
+            <h1 class="titulo-submenu-calor" >Subtemas</h1>
+
+            <div class="submenu-header">
+            <div id="calor" class="back-btn" onclick="volverMenuPrincipal(this.id)"><i class="fa-solid fa-arrow-left"></i> Regresar</div>
+            <div class="menu-title" id="submenu-title-calor"></div>
+            </div>
+
+            <div class="sidebar-buscador">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="buscador-subtemas" placeholder="Buscar variable..." autocomplete="off">
+            </div>
+
+            <div id="submenu-items-calor"></div>
+        </div>
+
+        <!-- Información de UT seleccionada - AL FINAL -->
+        <div id="info-ut-seleccionada" class="info-ut-container">  
         <div class="info-ut-clave" id="info-clave-ut">--</div>
         <div class="info-ut-nombre" id="info-nombre-ut"></div>
 
@@ -69,9 +91,9 @@
             <div id="info-secciones-completas"></div>
             <div id="info-secciones-parciales"></div>
         </div> -->
-      </div>
+        </div>
 
-  </div> 
+    </div> 
   
 
   <!-- TABLA PARA DESCARGAR LOS INDICADORES -->
